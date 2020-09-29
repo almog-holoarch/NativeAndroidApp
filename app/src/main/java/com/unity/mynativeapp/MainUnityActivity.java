@@ -508,7 +508,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
             };
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
-            builder.setMessage("Are you sure ?\n\n Risk area will be deleted permanently.").setPositiveButton("Yes", dialogClickListener)
+            builder.setMessage("Are you sure ?\n\n Risk area will be deleted permanently").setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
         }
     }
