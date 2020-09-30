@@ -2,6 +2,7 @@ package com.unity.mynativeapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class Add extends AppCompatActivity {
 
     private final String TAG = "AlmogADD";
+    private EditText name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,29 +44,41 @@ public class Add extends AppCompatActivity {
         accept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                EditText name = findViewById(R.id.txt_add_name);
+                //creating app's folder
+                getApplicationContext().getExternalCacheDir();
+
+                String substationJsonPath = MainActivity.getSubstationJsonPath();
+                File subsJsonFile = new File(substationJsonPath);
+
+                name = findViewById(R.id.txt_add_name);
                 EditText path = findViewById(R.id.txt_add_path);
+                String riskAreaJsonPath = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + name.getText() + ".json";
+                File riskAreaJsonFile = new File(riskAreaJsonPath);
 
                 // writing to a json file
                 Substation addedSubstation = new Substation(name.getText().toString(), path.getText().toString());
                 ObjectMapper objectMapper = new ObjectMapper();
 
-                String jsonPath = getApplicationContext().getFilesDir() + "/" + "substations.json";
-                File jsonFile = new File(jsonPath);
+                //creating a JSON file for the new added substation
+                try {
+                    riskAreaJsonFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-                Map<String, Substation> substationMap = new HashMap<>();;
+                Map<String, Substation> substationMap = new HashMap<>();
                 TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
 
                 try {
-                    if(jsonFile.exists()){
-                        substationMap = objectMapper.readValue(jsonFile, typeRef);
+                    if(subsJsonFile.exists()){
+                        substationMap = objectMapper.readValue(subsJsonFile, typeRef);
                         if(substationMap.containsKey(addedSubstation.getName())){
                             Toast.makeText(getApplicationContext(),"Substation named " + addedSubstation.getName() + " already exists",Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
                     substationMap.put(addedSubstation.getName(), addedSubstation);
-                    objectMapper.writeValue(new File(jsonPath), substationMap);
+                    objectMapper.writeValue(new File(substationJsonPath), substationMap);
                 } catch (IOException e) {
                     Log.d(TAG, "could not append json file because: " + e.getMessage());
                 }

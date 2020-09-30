@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,6 +28,8 @@ public class Edit extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final String substationJsonPath = MainActivity.getSubstationJsonPath();
+
         setContentView(R.layout.edit);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -38,6 +41,8 @@ public class Edit extends AppCompatActivity {
 
         final String oldName = nameEditText.getText().toString();
         final String oldPath = pathEditText.getText().toString();
+
+        final File oldRiskAreaFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + "/" + oldName + ".json");
 
         Button upload = (Button) findViewById(R.id.btn_edit_upload);
         upload.setOnClickListener(new View.OnClickListener() {
@@ -61,15 +66,14 @@ public class Edit extends AppCompatActivity {
 
                 Substation editedSubstation = new Substation(newName, newPath);
                 ObjectMapper objectMapper = new ObjectMapper();
-                String jsonPath = getApplicationContext().getFilesDir() + "/" + "substations.json";
-                File jsonFile = new File(jsonPath);
+                File subsJsonFile = new File(substationJsonPath);
 
                 Map<String, Substation> substationMap = new HashMap<>();;
                 TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
 
                 try {
-                    if(jsonFile.exists()){
-                        substationMap = objectMapper.readValue(jsonFile, typeRef);
+                    if(subsJsonFile.exists()){
+                        substationMap = objectMapper.readValue(subsJsonFile, typeRef);
 
                         if(!oldName.equals(newName) ){
                             if(substationMap.containsKey(newName)){
@@ -82,7 +86,10 @@ public class Edit extends AppCompatActivity {
 
                     substationMap.remove(oldName);
                     substationMap.put(editedSubstation.getName(), editedSubstation);
-                    objectMapper.writeValue(new File(jsonPath), substationMap);
+                    objectMapper.writeValue(new File(substationJsonPath), substationMap);
+
+                    File newRiskAreaFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + "/" + newName + ".json");
+                    oldRiskAreaFile.renameTo(newRiskAreaFile);
 
                 } catch (IOException e) {
                     Log.d(TAG, "could not append json file while editing a substation because: " + e.getMessage());
@@ -104,8 +111,7 @@ public class Edit extends AppCompatActivity {
 
                                 //Yes button clicked
                                 ObjectMapper objectMapper = new ObjectMapper();
-                                String jsonPath = getApplicationContext().getFilesDir() + "/" + "substations.json";
-                                File jsonFile = new File(jsonPath);
+                                File jsonFile = new File(substationJsonPath);
 
                                 Map<String, Substation> substationMap = new HashMap<>();;
                                 TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
@@ -115,9 +121,9 @@ public class Edit extends AppCompatActivity {
                                         substationMap = objectMapper.readValue(jsonFile, typeRef);
 
                                     }
-
                                     substationMap.remove(oldName);
-                                    objectMapper.writeValue(new File(jsonPath), substationMap);
+                                    objectMapper.writeValue(new File(substationJsonPath), substationMap);
+                                    oldRiskAreaFile.delete();
 
                                 } catch (IOException e) {
                                     Log.d(TAG, "could not append json file while deleting a substation because: " + e.getMessage());

@@ -24,6 +24,7 @@ import static com.unity.mynativeapp.MainActivity.getPath;
 public class MainUnityActivity extends OverrideUnityActivity {
 
     private final String TAG = "AlmogMainUnityActivity";
+    static private String riskAreaJsonPath;
 
     Button UI_BTN_back;
 
@@ -63,8 +64,9 @@ public class MainUnityActivity extends OverrideUnityActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String p = getPath();
-        UnitySendMessage("Main Camera", "updatePath", p);
+        String lasFilePath = getPath();
+        UnitySendMessage("Main Camera", "update3DModelPath", lasFilePath);
+        UnitySendMessage("Main Camera", "updateRiskAreaJsonPath", riskAreaJsonPath);
         UnitySendMessage("Main Camera", "start", "");
 
         ////////////////////
@@ -307,6 +309,8 @@ public class MainUnityActivity extends OverrideUnityActivity {
         });
     }
 
+
+
     public void addControlsToUnityFrame() {
 
         runOnUiThread(new Runnable() {
@@ -535,5 +539,9 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_cubeDown.setY(height - group - 10);
             }
          });
+    }
+
+    static public void updateRiskAreaJsonPath(String str){
+        riskAreaJsonPath = str;
     }
 }
