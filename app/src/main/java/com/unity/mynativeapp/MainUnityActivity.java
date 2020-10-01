@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import com.company.product.OverrideUnityActivity;
 
 import static com.unity.mynativeapp.MainActivity.getPath;
@@ -515,6 +517,14 @@ public class MainUnityActivity extends OverrideUnityActivity {
             builder.setMessage("Are you sure ?\n\n Risk area will be deleted permanently").setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
         }
+    }
+
+    public void EditBlockMessage(){
+        Toast.makeText(getApplicationContext(),"Risk Area editing will be blocked while camera is tilt",Toast.LENGTH_SHORT).show();
+    }
+
+    public void EditUnblockMessage(){
+        Toast.makeText(getApplicationContext(),"Risk Area editing is available",Toast.LENGTH_SHORT).show();
     }
 
     public void updateControlsToUnityFrame() {
