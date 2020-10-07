@@ -106,6 +106,155 @@ public class MainUnityActivity extends OverrideUnityActivity {
         iv.setLayoutParams(lp);
         getUnityFrameLayout().addView(iv);
 
+        ////////////////////////////////////////
+        //     Adding hidden cubs controls    //
+        ////////////////////////////////////////
+
+        /////////////////////////////
+        //     UI Height Plus      //
+        /////////////////////////////
+
+        UI_BTN_HeightPlus = new Button(getApplicationContext());
+        UI_BTN_HeightPlus.setText("Height +");
+        UI_BTN_HeightPlus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
+        UI_BTN_HeightPlus.setX(buttonLeftMargin);
+        UI_BTN_HeightPlus.setY(height - buttonHeight - 10);
+        UI_BTN_HeightPlus.setOnTouchListener(new View.OnTouchListener() {
+            private Handler mHandler;
+            @Override public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, 0);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return false;
+            }
+            Runnable mAction = new Runnable() {
+                @Override public void run() {
+                    UnitySendMessage("Main Camera", "cubeActions", "heightUp");
+                    mHandler.postDelayed(this, 30);
+                }
+            };
+        });
+        UI_BTN_HeightPlus.setVisibility(View.GONE);
+        getUnityFrameLayout().addView(UI_BTN_HeightPlus, buttonWidth, buttonHeight);
+
+        /////////////////////////////
+        //     UI Height Minus     //
+        /////////////////////////////
+
+        UI_BTN_HeightMinus = new Button(getApplicationContext());
+        UI_BTN_HeightMinus.setText("Height -");
+        UI_BTN_HeightMinus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
+        UI_BTN_HeightMinus.setX(buttonLeftMargin);
+        UI_BTN_HeightMinus.setY(height - group - 10);
+        UI_BTN_HeightMinus.setOnTouchListener(new View.OnTouchListener() {
+            private Handler mHandler;
+            @Override public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, 0);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return false;
+            }
+            Runnable mAction = new Runnable() {
+                @Override public void run() {
+                    UnitySendMessage("Main Camera", "cubeActions", "heightDown");
+                    mHandler.postDelayed(this, 30);
+                }
+            };
+        });
+        UI_BTN_HeightMinus.setVisibility(View.GONE);
+        getUnityFrameLayout().addView(UI_BTN_HeightMinus, buttonWidth, buttonHeight);
+
+        /////////////////////////////
+        //     UI Cube UP          //
+        /////////////////////////////
+
+        UI_BTN_cubeUp = new Button(getApplicationContext());
+        UI_BTN_cubeUp.setText("Move Up");
+        UI_BTN_cubeUp.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
+        UI_BTN_cubeUp.setX(buttonLeftMargin + buttonHeight + 0.5f * spacer);
+        UI_BTN_cubeUp.setY(height - buttonHeight - 10);
+        UI_BTN_cubeUp.setOnTouchListener(new View.OnTouchListener() {
+            private Handler mHandler;
+            @Override public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, 0);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return false;
+            }
+            Runnable mAction = new Runnable() {
+                @Override public void run() {
+                    UnitySendMessage("Main Camera", "cubeActions", "moveUp");
+                    mHandler.postDelayed(this, 30);
+                }
+            };
+        });
+        UI_BTN_cubeUp.setVisibility(View.GONE);
+        getUnityFrameLayout().addView(UI_BTN_cubeUp, buttonWidth, buttonHeight);
+
+        /////////////////////////////
+        //     UI Cube Down        //
+        /////////////////////////////
+
+        UI_BTN_cubeDown = new Button(getApplicationContext());
+        UI_BTN_cubeDown.setText("Move Down");
+        UI_BTN_cubeDown.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
+        UI_BTN_cubeDown.setX(buttonLeftMargin + buttonHeight + 0.5f * spacer);
+        UI_BTN_cubeDown.setY(height - group - 10);
+        UI_BTN_cubeDown.setOnTouchListener(new View.OnTouchListener() {
+            private Handler mHandler;
+            @Override public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, 0);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return false;
+            }
+            Runnable mAction = new Runnable() {
+                @Override public void run() {
+                    UnitySendMessage("Main Camera", "cubeActions", "moveDown");
+                    mHandler.postDelayed(this, 30);
+                }
+            };
+        });
+        UI_BTN_cubeDown.setVisibility(View.GONE);
+        getUnityFrameLayout().addView(UI_BTN_cubeDown, buttonWidth, buttonHeight);
+
+
     }
 
     @Override
@@ -149,7 +298,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
             @Override
             public void run() {
                 if(UI_BTN_HeightPlus != null){
-                    UI_BTN_HeightPlus.setVisibility(View.INVISIBLE);
+                    UI_BTN_HeightPlus.setVisibility(View.GONE);
                     UI_BTN_HeightMinus.setVisibility(View.GONE);
                     UI_BTN_cubeUp.setVisibility(View.GONE);
                     UI_BTN_cubeDown.setVisibility(View.GONE);
@@ -158,160 +307,20 @@ public class MainUnityActivity extends OverrideUnityActivity {
         });
     }
 
-    public void addCubeControls() {
+    public void showCubeControls() {
         runOnUiThread(new Runnable() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void run() {
-
-                DisplayMetrics displayMetrics = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                int height = displayMetrics.heightPixels;
-
-                /////////////////////////////
-                //     UI Height Plus      //
-                /////////////////////////////
-
-                UI_BTN_HeightPlus = new Button(getApplicationContext());
-                UI_BTN_HeightPlus.setText("Height +");
-                UI_BTN_HeightPlus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
-                UI_BTN_HeightPlus.setX(buttonLeftMargin);
-                UI_BTN_HeightPlus.setY(height - buttonHeight - 10);
-                UI_BTN_HeightPlus.setOnTouchListener(new View.OnTouchListener() {
-                    private Handler mHandler;
-                    @Override public boolean onTouch(View v, MotionEvent event) {
-                        switch(event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                if (mHandler != null) return true;
-                                mHandler = new Handler();
-                                mHandler.postDelayed(mAction, 0);
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                if (mHandler == null) return true;
-                                mHandler.removeCallbacks(mAction);
-                                mHandler = null;
-                                break;
-                        }
-                        return false;
-                    }
-                    Runnable mAction = new Runnable() {
-                        @Override public void run() {
-                            UnitySendMessage("Main Camera", "cubeActions", "heightUp");
-                            mHandler.postDelayed(this, 30);
-                        }
-                    };
-                });
-                getUnityFrameLayout().addView(UI_BTN_HeightPlus, buttonWidth, buttonHeight);
-
-                /////////////////////////////
-                //     UI Height Minus     //
-                /////////////////////////////
-
-                UI_BTN_HeightMinus = new Button(getApplicationContext());
-                UI_BTN_HeightMinus.setText("Height -");
-                UI_BTN_HeightMinus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
-                UI_BTN_HeightMinus.setX(buttonLeftMargin);
-                UI_BTN_HeightMinus.setY(height - group - 10);
-                UI_BTN_HeightMinus.setOnTouchListener(new View.OnTouchListener() {
-                    private Handler mHandler;
-                    @Override public boolean onTouch(View v, MotionEvent event) {
-                        switch(event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                if (mHandler != null) return true;
-                                mHandler = new Handler();
-                                mHandler.postDelayed(mAction, 0);
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                if (mHandler == null) return true;
-                                mHandler.removeCallbacks(mAction);
-                                mHandler = null;
-                                break;
-                        }
-                        return false;
-                    }
-                    Runnable mAction = new Runnable() {
-                        @Override public void run() {
-                            UnitySendMessage("Main Camera", "cubeActions", "heightDown");
-                            mHandler.postDelayed(this, 30);
-                        }
-                    };
-                });
-                getUnityFrameLayout().addView(UI_BTN_HeightMinus, buttonWidth, buttonHeight);
-
-                /////////////////////////////
-                //     UI Cube UP          //
-                /////////////////////////////
-
-                UI_BTN_cubeUp = new Button(getApplicationContext());
-                UI_BTN_cubeUp.setText("Move Up");
-                UI_BTN_cubeUp.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
-                UI_BTN_cubeUp.setX(buttonLeftMargin + buttonHeight + 0.5f * spacer);
-                UI_BTN_cubeUp.setY(height - buttonHeight - 10);
-                UI_BTN_cubeUp.setOnTouchListener(new View.OnTouchListener() {
-                    private Handler mHandler;
-                    @Override public boolean onTouch(View v, MotionEvent event) {
-                        switch(event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                if (mHandler != null) return true;
-                                mHandler = new Handler();
-                                mHandler.postDelayed(mAction, 0);
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                if (mHandler == null) return true;
-                                mHandler.removeCallbacks(mAction);
-                                mHandler = null;
-                                break;
-                        }
-                        return false;
-                    }
-                    Runnable mAction = new Runnable() {
-                        @Override public void run() {
-                            UnitySendMessage("Main Camera", "cubeActions", "moveUp");
-                            mHandler.postDelayed(this, 30);
-                        }
-                    };
-                });
-                getUnityFrameLayout().addView(UI_BTN_cubeUp, buttonWidth, buttonHeight);
-
-                /////////////////////////////
-                //     UI Cube Down        //
-                /////////////////////////////
-
-                UI_BTN_cubeDown = new Button(getApplicationContext());
-                UI_BTN_cubeDown.setText("Move Down");
-                UI_BTN_cubeDown.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
-                UI_BTN_cubeDown.setX(buttonLeftMargin + buttonHeight + 0.5f * spacer);
-                UI_BTN_cubeDown.setY(height - group - 10);
-                UI_BTN_cubeDown.setOnTouchListener(new View.OnTouchListener() {
-                    private Handler mHandler;
-                    @Override public boolean onTouch(View v, MotionEvent event) {
-                        switch(event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                if (mHandler != null) return true;
-                                mHandler = new Handler();
-                                mHandler.postDelayed(mAction, 0);
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                if (mHandler == null) return true;
-                                mHandler.removeCallbacks(mAction);
-                                mHandler = null;
-                                break;
-                        }
-                        return false;
-                    }
-                    Runnable mAction = new Runnable() {
-                        @Override public void run() {
-                            UnitySendMessage("Main Camera", "cubeActions", "moveDown");
-                            mHandler.postDelayed(this, 30);
-                        }
-                    };
-                });
-                getUnityFrameLayout().addView(UI_BTN_cubeDown, buttonWidth, buttonHeight);
+                if(UI_BTN_HeightPlus != null){
+                    UI_BTN_HeightPlus.setVisibility(View.VISIBLE);
+                    UI_BTN_HeightMinus.setVisibility(View.VISIBLE);
+                    UI_BTN_cubeUp.setVisibility(View.VISIBLE);
+                    UI_BTN_cubeDown.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
-
-
 
     public void addControlsToUnityFrame() {
 

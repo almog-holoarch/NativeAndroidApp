@@ -22,17 +22,28 @@ import static com.unity.mynativeapp.MainActivity.getFromSubs;
 
 public class Edit extends AppCompatActivity {
 
-    private static String TAG;
+    private static String TAG = "AlmogEditActivity";
+
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String substationJsonPath = MainActivity.getSubstationJsonPath();
-
         setContentView(R.layout.edit);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.edit_toolbar);
+        toolbar.setNavigationIcon(R.drawable.back);
+        toolbar.setTitle(R.string.editTitle);
         setSupportActionBar(toolbar);
+//      toolbar.inflateMenu(R.menu.send_menu);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        final String substationJsonPath = MainActivity.getSubstationJsonPath();
 
         final EditText nameEditText = findViewById(R.id.txt_edit_name);
         EditText pathEditText = findViewById(R.id.txt_edit_path);
