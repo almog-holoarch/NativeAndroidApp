@@ -47,15 +47,31 @@ public class MainActivity extends AppCompatActivity {
     static private RecyclerView recyclerView;
     static private SubstationsAdapter adapter;
 
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        //toolbar.setNavigationIcon(R.drawable.back);
+        toolbar.setTitle(R.string.version);
+        //toolbar.setLogo(R.drawable.toolbar_logo);
+        setSupportActionBar(toolbar);
+//      toolbar.inflateMenu(R.menu.send_menu);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         checkPermissions();
 
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        setContentView(R.layout.activity_main);
+//        Toolbar toolbar = findViewById(R.id.main_toolbar);
+//        setSupportActionBar(toolbar);
 
         recyclerView = (RecyclerView) findViewById(R.id.list);
         adapter = new SubstationsAdapter(subs);
