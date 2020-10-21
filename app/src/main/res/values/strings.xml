@@ -11,8 +11,9 @@
     <string name="previous">Previous</string>
     <string name="addTitle">Add</string>
     <string name="editTitle">Edit</string>
-    <string name="version">Version 1.0.3</string>
+    <string name="version">Version 1.1.1</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
 </resources>
