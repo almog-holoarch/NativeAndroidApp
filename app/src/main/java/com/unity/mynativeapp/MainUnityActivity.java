@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.Toolbar;
@@ -32,6 +33,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
     private final String TAG = "AlmogMainUnityActivity";
     static private String riskAreaJsonPath;
 
+    private  boolean isChanged;
     Button UI_BTN_back;
 
     Button UI_BTN_tiltPlus;
@@ -66,9 +68,16 @@ public class MainUnityActivity extends OverrideUnityActivity {
     int UI_ThirdSectionHeight = UI_SecondSectionHeight + buttonHeight * 3 + spacer;
     int UI_FourthSectionHeight = UI_ThirdSectionHeight + buttonHeight * 2 + spacer;
 
+    void isChangesTrue(){
+        Log.d(TAG,"entering chanig = true func");
+        isChanged = true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        isChanged = false;
 
         String lasFilePath = getPath();
         UnitySendMessage("Main Camera", "update3DModelPath", lasFilePath);
@@ -86,9 +95,46 @@ public class MainUnityActivity extends OverrideUnityActivity {
         UI_BTN_back.setY(UI_firstSectionHeight);
         UI_BTN_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG,"closing unity");
-                UnitySendMessage("Main Camera", "jsonUpdate", "");
-                showMainActivity("");
+
+                UnitySendMessage("Main Camera", "checkIfChanged", "");
+                if(isChanged){
+
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                switch (which){
+
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        UnitySendMessage("Main Camera", "jsonUpdate", "");
+                                        Log.d(TAG,"closing unity and saving changes");
+                                        showMainActivity("");
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        Log.d(TAG,"closing unity and saving changes");
+                                        showMainActivity("");
+                                        break;
+
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
+                        builder
+                                .setMessage("Do you want to save changes ?\n\n ")
+                                .setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener)
+                                .setNeutralButton("Cancel",dialogClickListener)
+                                .setCancelable(true)
+                                .show();
+
+                } else{
+                    showMainActivity("");
+                }
+//                Log.d(TAG,"closing unity");
+//                UnitySendMessage("Main Camera", "jsonUpdate", "");
+//                showMainActivity("");
             }
         });
         getUnityFrameLayout().addView(UI_BTN_back, buttonWidth, buttonHeight);
