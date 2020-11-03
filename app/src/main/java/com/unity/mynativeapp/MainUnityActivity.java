@@ -12,19 +12,23 @@ import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.company.product.OverrideUnityActivity;
+import com.unity3d.player.UnityPlayer;
 
 import static com.unity.mynativeapp.MainActivity.getPath;
 
@@ -76,6 +80,14 @@ public class MainUnityActivity extends OverrideUnityActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String cmdLine = updateUnityCommandLineArguments(getIntent().getStringExtra("unity"));
+        getIntent().putExtra("unity", cmdLine);
+        mUnityPlayer = new UnityPlayer(this, this);
+        setContentView(com.unity3d.player.R.layout.activity_unity);
+        FrameLayout frameLayout = (FrameLayout)findViewById(com.unity3d.player.R.id.unity_player_layout);
+        frameLayout.addView(mUnityPlayer.getView());
+        mUnityPlayer.requestFocus();
 
         isChanged = false;
 
