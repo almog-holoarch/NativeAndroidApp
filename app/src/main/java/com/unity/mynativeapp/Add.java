@@ -3,8 +3,10 @@ package com.unity.mynativeapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +31,9 @@ public class Add extends AppCompatActivity {
     private EditText editText_name;
 
     private Toolbar toolbar;
+
+    // Access a Cloud Firestore instance from your Activity
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +87,6 @@ public class Add extends AppCompatActivity {
                     String substationJsonPath = MainActivity.getSubstationJsonPath();
                     File subsJsonFile = new File(substationJsonPath);
 
-
-
                     String riskAreaJsonPath = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + name + ".json";
                     File riskAreaJsonFile = new File(riskAreaJsonPath);
 
@@ -110,6 +118,24 @@ public class Add extends AppCompatActivity {
                         Log.d(TAG, "could not append json file because: " + e.getMessage());
                     }
 
+                    // FIREBASE START //
+                    // Add a new document with a generated ID
+                    db.collection("Substations")
+                            .add(addedSubstation)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error adding document", e);
+                                }
+                            });
+                    // FIREBASE END //
+
                     finish();
                 }
             }
@@ -119,15 +145,16 @@ public class Add extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        switch(requestCode){
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
 
             case 7:
-                if(resultCode==RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     EditText txt = findViewById(R.id.txt_add_path);
                     String p = FileUtils.getPath(getApplicationContext(), data.getData());
 
-                    if(!p.endsWith(".las")){
-                        Toast.makeText(getApplicationContext(),"Supports only .las file",Toast.LENGTH_SHORT).show();
+                    if (!p.endsWith(".las")) {
+                        Toast.makeText(getApplicationContext(), "Supports only .las file", Toast.LENGTH_SHORT).show();
                         txt.setText("");
                         return;
                     }

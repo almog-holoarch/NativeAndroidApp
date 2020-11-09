@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "287002953098",
+    "firebase_url": "https://holonav-71611.firebaseio.com",
+    "project_id": "holonav-71611",
+    "storage_bucket": "holonav-71611.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287002953098:android:106436a0cf5a118dfd7473",
+        "android_client_info": {
+          "package_name": "com.unity.mynativeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "287002953098-dfb6fh5c5lmvm27nan274khvp8ha15ep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU69w-NjBndJ9bzYWNYbWlqT5cyGH9fuc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287002953098-dfb6fh5c5lmvm27nan274khvp8ha15ep.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

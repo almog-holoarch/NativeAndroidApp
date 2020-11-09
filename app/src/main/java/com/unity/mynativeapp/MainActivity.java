@@ -5,23 +5,28 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +40,12 @@ import static com.unity.mynativeapp.MainUnityActivity.updateRiskAreaJsonPath;
 public class MainActivity extends AppCompatActivity {
 
     private static String TAG = "AlmogMainActivity";
+
+    private RecyclerView recyclerV;
+    private RecyclerView.LayoutManager layoutManager;
+    private FirebaseFirestore db;
+    private FirestoreRecyclerAdapter substationsFBAdapter;
+
     private static String substationJsonPath = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "substations.json";
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE };
@@ -55,11 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        //toolbar.setNavigationIcon(R.drawable.back);
         toolbar.setTitle(R.string.version);
-        //toolbar.setLogo(R.drawable.toolbar_logo);
         setSupportActionBar(toolbar);
-//      toolbar.inflateMenu(R.menu.send_menu);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,10 +76,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         checkPermissions();
-
-//        setContentView(R.layout.activity_main);
-//        Toolbar toolbar = findViewById(R.id.main_toolbar);
-//        setSupportActionBar(toolbar);
 
         recyclerView = (RecyclerView) findViewById(R.id.list);
         adapter = new SubstationsAdapter(subs);
@@ -105,6 +109,51 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        //  FIREBASE START //
+//        Query query = FirebaseFirestore.getInstance().collection("Substations").orderBy("name", Direction.DESCENDING).limit(50);
+//        FirestoreRecyclerOptions<Substation> options =
+//                new FirestoreRecyclerOptions
+//                        .Builder<Substation>()
+//                        .setQuery(query, Substation.class)
+//                        .build();
+//        recyclerV = recyclerView;
+//
+//        substationsFBAdapter = new FirestoreRecyclerAdapter<Substation, node>(options){
+//
+//            @Override
+//            public SubHolder onCreateViewHolder(ViewGroup parent,
+//                                                  int viewType) {
+//
+//                View v = LayoutInflater.from(parent.getContext())
+//                        .inflate(R.layout.node, parent, false);
+//
+//                return  new SubHolder(v);
+//            }
+//
+//            @Override
+//            public void onBindViewHolder(DriveHolder holder, int position, final Drive item) {
+//                holder.setDriveFromLocation(item.getFromCity());
+//                holder.setDriveTime(item.getTime());
+//                holder.setDriveToLocation(item.getToCity());
+//                holder.setDriverID(item.getDriverFullName());
+//                holder.setDriversProfilePic((Uri.parse(item.getDriverProfilePicUri())));
+//                holder.itemView.setOnClickListener( new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Intent intent = new Intent(v.getContext(), DisplayRideActivity.class);
+//                        intent.putExtra("drive", item);
+//                        v.getContext().startActivity(intent);
+//                    }
+//                });
+//            }
+//        };
+//
+//        layoutManager = new LinearLayoutManager(context);
+//        recyclerV.setLayoutManager(layoutManager);
+//        recyclerV.setAdapter(ridesFBAdapter);
+//        ridesFBAdapter.startListening();
+        // FIREBASE END //
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

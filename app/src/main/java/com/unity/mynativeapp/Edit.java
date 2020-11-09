@@ -5,8 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +14,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,8 +26,10 @@ import static com.unity.mynativeapp.MainActivity.getFromSubs;
 public class Edit extends AppCompatActivity {
 
     private static String TAG = "AlmogEditActivity";
-
     private Toolbar toolbar;
+
+    // Access a Cloud Firestore instance from your Activity
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +103,12 @@ public class Edit extends AppCompatActivity {
                     substationMap.remove(oldName);
                     substationMap.put(editedSubstation.getName(), editedSubstation);
                     objectMapper.writeValue(new File(substationJsonPath), substationMap);
+
+                    // FIREBASE START //
+//                    final DocumentReference docRef = db.collection("Substations").document(oldEvent.getDatabaseID());
+//                    docRef.update("name", editedSubstation.getName());
+//                    docRef.update("path", editedSubstation.getPath());
+                    // FIREBASE END //
 
                     File newRiskAreaFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + "/" + newName + ".json");
                     oldRiskAreaFile.renameTo(newRiskAreaFile);
