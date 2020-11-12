@@ -19,11 +19,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.company.product.OverrideUnityActivity;
 import com.unity3d.player.UnityPlayer;
-
-import static com.unity.mynativeapp.Database.getPath;
 
 public class MainUnityActivity extends OverrideUnityActivity {
 
@@ -94,7 +91,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         ////////////////////
 
         UI_BTN_back = new Button(getApplicationContext());
-        UI_BTN_back.setText("Back");
+        UI_BTN_back.setText(getString(R.string.BUTTON_U_back));
         UI_BTN_back.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
         UI_BTN_back.setX(buttonLeftMargin);
         UI_BTN_back.setY(UI_firstSectionHeight);
@@ -127,10 +124,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
                         builder
-                                .setMessage("Do you want to save changes ?\n\n ")
-                                .setPositiveButton("Yes", dialogClickListener)
-                                .setNegativeButton("No", dialogClickListener)
-                                .setNeutralButton("Cancel",dialogClickListener)
+                                .setMessage(getString(R.string.MESSAGE_save_changes) +"\n\n ")
+                                .setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
+                                .setNegativeButton(getString(R.string.BUTTON_no), dialogClickListener)
+                                .setNeutralButton(getString(R.string.BUTTON_cancel),dialogClickListener)
                                 .setCancelable(true)
                                 .show();
 
@@ -168,7 +165,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         /////////////////////////////
 
         UI_BTN_HeightPlus = new Button(getApplicationContext());
-        UI_BTN_HeightPlus.setText("Height +");
+        UI_BTN_HeightPlus.setText(getString(R.string.BUTTON_U_height_plus));
         UI_BTN_HeightPlus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
         UI_BTN_HeightPlus.setX(buttonLeftMargin);
         UI_BTN_HeightPlus.setY(height - buttonHeight - 10);
@@ -204,7 +201,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         /////////////////////////////
 
         UI_BTN_HeightMinus = new Button(getApplicationContext());
-        UI_BTN_HeightMinus.setText("Height -");
+        UI_BTN_HeightMinus.setText(getString(R.string.BUTTON_U_height_minus));
         UI_BTN_HeightMinus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
         UI_BTN_HeightMinus.setX(buttonLeftMargin);
         UI_BTN_HeightMinus.setY(height - group - 10);
@@ -240,7 +237,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         /////////////////////////////
 
         UI_BTN_cubeUp = new Button(getApplicationContext());
-        UI_BTN_cubeUp.setText("Move Up");
+        UI_BTN_cubeUp.setText(getString(R.string.BUTTON_U_move_up));
         UI_BTN_cubeUp.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
         UI_BTN_cubeUp.setX(buttonLeftMargin + buttonHeight + 0.5f * spacer);
         UI_BTN_cubeUp.setY(height - buttonHeight - 10);
@@ -276,7 +273,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         /////////////////////////////
 
         UI_BTN_cubeDown = new Button(getApplicationContext());
-        UI_BTN_cubeDown.setText("Move Down");
+        UI_BTN_cubeDown.setText(getString(R.string.BUTTON_U_move_down));
         UI_BTN_cubeDown.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
         UI_BTN_cubeDown.setX(buttonLeftMargin + buttonHeight + 0.5f * spacer);
         UI_BTN_cubeDown.setY(height - group - 10);
@@ -395,7 +392,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 //////////////////////
 
                 UI_BTN_tiltPlus = new Button(getApplicationContext());
-                UI_BTN_tiltPlus.setText("Tilt +");
+                UI_BTN_tiltPlus.setText(getString(R.string.BUTTON_U_tilt_plus));
                 UI_BTN_tiltPlus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_tiltPlus.setX(buttonLeftMargin);
                 UI_BTN_tiltPlus.setY(UI_SecondSectionHeight);
@@ -430,7 +427,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 ////////////////////////
 
                 UI_BTN_resetCamera = new Button(getApplicationContext());
-                UI_BTN_resetCamera.setText("Cam Reset");
+                UI_BTN_resetCamera.setText(getString(R.string.BUTTON_U_cam_reset));
                 UI_BTN_resetCamera.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_resetCamera.setX(buttonLeftMargin);
                 UI_BTN_resetCamera.setY(UI_SecondSectionHeight + buttonHeight - group);
@@ -446,7 +443,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 //////////////////////
 
                 UI_BTN_tiltMinus = new Button(getApplicationContext());
-                UI_BTN_tiltMinus.setText("Tilt -");
+                UI_BTN_tiltMinus.setText(getString(R.string.BUTTON_U_tilt_minus));
                 UI_BTN_tiltMinus.setX(buttonLeftMargin);
                 UI_BTN_tiltMinus.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_tiltMinus.setY(UI_SecondSectionHeight + (buttonHeight - group) * 2);
@@ -482,7 +479,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 //////////////////////////
 
                 UI_BTN_addLayers = new Button(getApplicationContext());
-                UI_BTN_addLayers.setText("Add Layers");
+                UI_BTN_addLayers.setText(getString(R.string.BUTTON_U_add_layers));
                 UI_BTN_addLayers.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_addLayers.setX(buttonLeftMargin);
                 UI_BTN_addLayers.setY(UI_ThirdSectionHeight);
@@ -498,7 +495,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 /////////////////////////////
 
                 UI_BTN_removeLayers = new Button(getApplicationContext());
-                UI_BTN_removeLayers.setText("Remove Layers");
+                UI_BTN_removeLayers.setText(getString(R.string.BUTTON_U_remove_layers));
                 UI_BTN_removeLayers.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_removeLayers.setX(buttonLeftMargin);
                 UI_BTN_removeLayers.setY(UI_ThirdSectionHeight + buttonHeight - group);
@@ -514,7 +511,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 /////////////////////////////
 
                 UI_BTN_addRiskArea = new Button(getApplicationContext());
-                UI_BTN_addRiskArea.setText("Add A Risk Area");
+                UI_BTN_addRiskArea.setText(getString(R.string.BUTTON_U_new_risk_area));
                 UI_BTN_addRiskArea.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_addRiskArea.setX(buttonLeftMargin);
                 UI_BTN_addRiskArea.setY(UI_FourthSectionHeight);
@@ -530,7 +527,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 ////////////////////////
 
                 UI_BTN_export = new Button(getApplicationContext());
-                UI_BTN_export.setText("Export");
+                UI_BTN_export.setText(getString(R.string.BUTTON_U_export));
                 UI_BTN_export.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_export.setX(width - 200);
                 UI_BTN_export.setY(UI_firstSectionHeight);
@@ -546,7 +543,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 //////////////////////
 
                 UI_BTN_delete = new Button(getApplicationContext());
-                UI_BTN_delete.setText("Delete");
+                UI_BTN_delete.setText(getString(R.string.BUTTON_U_delete));
                 UI_BTN_delete.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
                 UI_BTN_delete.setX(width-200);
                 UI_BTN_delete.setY(height-50);
@@ -576,17 +573,17 @@ public class MainUnityActivity extends OverrideUnityActivity {
             };
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
-            builder.setMessage("Are you sure ?\n\n Risk area will be deleted permanently").setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).show();
+            builder.setMessage(getString(R.string.MESSAGE_are_you_sure)+ "\n\n" + getString(R.string.MESSAGE_riskArea_delete)).setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
+                    .setNegativeButton(getString(R.string.BUTTON_no), dialogClickListener).show();
         }
     }
 
     public void EditBlockMessage(){
-        Toast.makeText(getApplicationContext(),"Risk Area editing will be blocked while camera is tilt",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_edit_block),Toast.LENGTH_SHORT).show();
     }
 
     public void EditUnblockMessage(){
-        Toast.makeText(getApplicationContext(),"Risk Area editing is available",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_edit_enable),Toast.LENGTH_SHORT).show();
     }
 
     public void updateControlsToUnityFrame() {

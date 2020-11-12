@@ -26,7 +26,7 @@ public class Add extends AppCompatActivity {
 
         toolbar = findViewById(R.id.add_toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
-        toolbar.setTitle(R.string.addTitle);
+        toolbar.setTitle(R.string.TITLE_addTitle);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,15 +53,15 @@ public class Add extends AppCompatActivity {
                 String path = ((EditText)findViewById(R.id.txt_add_path)).getText().toString();
 
                 if (db.isNameExists(name)){
-                    Toast.makeText(getApplicationContext(),"Name already exists",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.TOAST_substation_named) + " " + name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                 }
 
                 else if(!nameIsValid(name)){
-                    Toast.makeText(getApplicationContext(),"Choose A substation name",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_name),Toast.LENGTH_SHORT).show();
                 }
 
                 else if(!pathIsValid(path)){
-                    Toast.makeText(getApplicationContext(),"Upload A substation .las file",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_upload_las),Toast.LENGTH_SHORT).show();
                 }
 
                 else {
@@ -93,7 +93,7 @@ public class Add extends AppCompatActivity {
                     String p = FileUtils.getPath(getApplicationContext(), data.getData());
 
                     if (!p.endsWith(".las")) {
-                        Toast.makeText(getApplicationContext(), "Supports only .las file", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.TOAST_support_las), Toast.LENGTH_SHORT).show();
                         txt.setText("");
                         return;
                     }

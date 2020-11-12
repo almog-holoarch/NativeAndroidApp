@@ -88,7 +88,7 @@ public class Database extends AppCompatActivity {
             if(subsJsonFile.exists()){
                 substationMap = objectMapper.readValue(subsJsonFile, typeRef);
                 if(substationMap.containsKey(addedSubstation.getName())){
-                    Toast.makeText(getApplicationContext(),"Substation named " + addedSubstation.getName() + " already exists",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_substation_named)+ " " + addedSubstation.getName() + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -145,9 +145,9 @@ public class Database extends AppCompatActivity {
                 path = subs.get(position).getPath();
 
                 if(path == ""){
-                    Toast.makeText(itemView.getContext(),"Add a 3D model first",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(itemView.getContext(),getString(R.string.TOAST_upload_las),Toast.LENGTH_SHORT).show();
                 } else if(!path.endsWith(".las") ){
-                    Toast.makeText(itemView.getContext(),"supports .las file only",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(itemView.getContext(),getString(R.string.TOAST_support_las),Toast.LENGTH_SHORT).show();
                 } else {
                     String nodeName = subs.get(position).getName();
                     String riskAreaJsonPath = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + nodeName + ".json";

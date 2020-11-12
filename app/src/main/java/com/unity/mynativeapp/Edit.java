@@ -7,17 +7,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import static com.unity.mynativeapp.Database.getFromSubs;
 
 public class Edit extends AppCompatActivity {
@@ -26,7 +20,6 @@ public class Edit extends AppCompatActivity {
 
     private Database db;
     private Toolbar toolbar;
-    private final String substationJsonPath = Database.getSubstationJsonPath();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +31,7 @@ public class Edit extends AppCompatActivity {
 
         toolbar = findViewById(R.id.edit_toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
-        toolbar.setTitle(R.string.editTitle);
+        toolbar.setTitle(R.string.TITLE_editTitle);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +71,7 @@ public class Edit extends AppCompatActivity {
 
                 if(!old_name.equals(new_name)){
                     if(db.isNameExists(new_name)){
-                        Toast.makeText(getApplicationContext(),"Substation named " + new_name + " already exists, please choose a new name",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_substation_named)+ " " + new_name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                         nameEditText.setText("");
                         return;
                     }
@@ -117,9 +110,9 @@ public class Edit extends AppCompatActivity {
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(delete.getContext());
-                builder.setMessage("Are you sure ?\n\n\"" + nameEditText.getText() + "\" will be deleted permanently.")
-                        .setPositiveButton("Yes", dialogClickListener)
-                        .setNegativeButton("No", dialogClickListener)
+                builder.setMessage(getString(R.string.MESSAGE_are_you_sure) + "\n\n\"" + nameEditText.getText() + "\" " + getString(R.string.MESSAGE_will_be_delete))
+                        .setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
+                        .setNegativeButton(getString(R.string.BUTTON_no), dialogClickListener)
                         .show();
 
             }
@@ -138,7 +131,7 @@ public class Edit extends AppCompatActivity {
                     String p = FileUtils.getPath(getApplicationContext(), data.getData());
 
                     if (!p.endsWith(".las")) {
-                        Toast.makeText(getApplicationContext(), "Supports only .las file", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.TOAST_support_las), Toast.LENGTH_SHORT).show();
                         txt.setText("");
                         return;
                     }

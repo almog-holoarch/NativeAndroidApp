@@ -1,22 +1,63 @@
 <resources>
-    <string name="app_name">Holonav</string>
-    <string name="add">Add a new substation</string>
-    <string name="action_settings">Settings</string>
+
+    <string name="APP_NAME"                         >Holonav</string>
+    <string name="ACTION_SETTINGS"                  >Settings</string>
+
+    <!-- Unity -->
     <string name="game_view_content_description">Game view</string>
     <string name="title_activity_unity">unity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-    <string name="addTitle">Add</string>
-    <string name="editTitle">Edit</string>
-    <string name="version">Version 1.1.4</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_main2">MainActivity2</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
+    <!-- Titles -->
+    <string name="TITLE_next"                       >Next</string>
+    <string name="TITLE_previous"                   >Previous</string>
+    <string name="TITLE_addTitle"                   >Add</string>
+    <string name="TITLE_editTitle"                  >Edit</string>
+    <string name="TITLE_version"                    >Version 1.1.4</string>
+
+    <!-- Message -->
+    <string name="MESSAGE_empty_list"               >No substations to display</string>
+    <string name="MESSAGE_save_changes"             >Do you want to save changes ?</string>
+    <string name="MESSAGE_are_you_sure"             >Are you sure ?</string>
+    <string name="MESSAGE_riskArea_delete"          >Risk area will be deleted permanently</string>
+    <string name="MESSAGE_will_be_delete"           >will be deleted permanently</string>
+
+    <!-- Toasts -->
+    <string name="TOAST_edit_block"                >Risk Area editing will be blocked while camera is tilt</string>
+    <string name="TOAST_edit_enable"               >Risk Area editing is available</string>
+    <string name="TOAST_permission"                >Required permission</string>
+    <string name="TOAST_exiting"                   >not granted, exiting</string>
+    <string name="TOAST_support_las"               >Supports only .las file</string>
+    <string name="TOAST_upload_las"                >Upload A substation .las file</string>
+    <string name="TOAST_choose_name"               >Choose A substation name</string>
+    <string name="TOAST_substation_named"          >Substation named</string>
+    <string name="TOAST_already_exists"            >already exists</string>
+
+    <!-- Android Buttons -->
+    <string name="BUTTON_upload"                    >Upload</string>
+    <string name="BUTTON_remove"                    >Remove</string>
+    <string name="BUTTON_save"                      >Save</string>
+    <string name="BUTTON_add"                       >Add</string>
+    <string name="BUTTON_yes"                       >Yes</string>
+    <string name="BUTTON_no"                        >No</string>
+    <string name="BUTTON_cancel"                    >Cancel</string>
+
+    <!-- Unity Buttons -->
+    <string name="BUTTON_U_back"                    >BACK</string>
+    <string name="BUTTON_U_tilt_plus"               >TILT +</string>
+    <string name="BUTTON_U_cam_reset"               >CAM RESET</string>
+    <string name="BUTTON_U_tilt_minus"              >TILT -</string>
+    <string name="BUTTON_U_add_layers"              >ADD LAYERS</string>
+    <string name="BUTTON_U_remove_layers"           >REMOVE LAYERS</string>
+    <string name="BUTTON_U_new_risk_area"           >NEW RISK AREA</string>
+    <string name="BUTTON_U_export"                  >EXPORT</string>
+    <string name="BUTTON_U_height_plus"             >HEIGHT +</string>
+    <string name="BUTTON_U_height_minus"            >HEIGHT -</string>
+    <string name="BUTTON_U_move_up"                 >MOVE UP</string>
+    <string name="BUTTON_U_move_down"               >MOVE DOWN</string>
+    <string name="BUTTON_U_delete"                  >DELETE</string>
+
+    <!-- Hints -->
+    <string name="HINT_sub_name"                    >Name</string>
+    <string name="HINT_sub_path"                    >3D Model Path</string>
 
 </resources>

@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-condensed"
-                android:hint="Name"
+                android:hint="@string/HINT_sub_name"
                 android:inputType="textNoSuggestions|textCapSentences"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,7 +66,7 @@
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="sans-serif-condensed"
-            android:hint="3D Model Path"
+            android:hint="@string/HINT_sub_path"
             android:inputType="textNoSuggestions|textCapSentences" />
 
         <Button
@@ -74,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:text="Upload" />
+            android:text="@string/BUTTON_upload" />
 
 
 </LinearLayout>
@@ -85,6 +85,6 @@
         android:layout_gravity="center"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Add" />
+        android:text="@string/BUTTON_add" />
 
 </LinearLayout>

@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         db = new Database();
 
         Toolbar toolbar = findViewById(R.id.main_toolbar);
-        toolbar.setTitle(R.string.version);
+        toolbar.setTitle(R.string.TITLE_version);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 for (int index = permissions.length - 1; index >= 0; --index) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
                         // exit the app if one permission is not granted
-                        Toast.makeText(this, "Required permission '" + permissions[index]
-                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.TOAST_permission) + " '" + permissions[index]
+                                + "' " + getString(R.string.TOAST_exiting), Toast.LENGTH_LONG).show();
                         finish();
                         return;
                     }

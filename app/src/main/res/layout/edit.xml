@@ -1,6 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -45,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-condensed"
-                android:hint="Name"
+                android:hint="@string/HINT_sub_name"
                 android:inputType="textNoSuggestions|textCapSentences"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="sans-serif-condensed"
-            android:hint="3D Model Path"
+            android:hint="@string/HINT_sub_path"
             android:inputType="textNoSuggestions|textCapSentences"
             android:clickable="false"
             android:focusable="false"/>
@@ -75,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:text="Upload" />
+            android:text="@string/BUTTON_upload" />
 
 
 </LinearLayout>
@@ -86,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:text="Remove" />
+        android:text="@string/BUTTON_remove" />
 
     <Button
         android:id="@+id/btn_edit_save"
@@ -94,6 +93,6 @@
         android:layout_gravity="center"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Save" />
+        android:text="@string/BUTTON_save" />
 
 </LinearLayout>
