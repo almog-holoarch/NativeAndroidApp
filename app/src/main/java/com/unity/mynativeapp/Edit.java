@@ -14,33 +14,32 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import static com.unity.mynativeapp.MainActivity.getFromSubs;
+import static com.unity.mynativeapp.Database.getFromSubs;
 
 public class Edit extends AppCompatActivity {
 
-    private static String TAG = "AlmogEditActivity";
-    private Toolbar toolbar;
+    private static String TAG = "HoloNAV EDIT Class TAG ";
 
-    // Access a Cloud Firestore instance from your Activity
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Database db;
+    private Toolbar toolbar;
+    private final String substationJsonPath = Database.getSubstationJsonPath();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.edit);
-        toolbar = (Toolbar) findViewById(R.id.edit_toolbar);
+
+        db = new Database();
+
+        toolbar = findViewById(R.id.edit_toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
         toolbar.setTitle(R.string.editTitle);
         setSupportActionBar(toolbar);
-//      toolbar.inflateMenu(R.menu.send_menu);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,19 +47,17 @@ public class Edit extends AppCompatActivity {
             }
         });
 
-        final String substationJsonPath = MainActivity.getSubstationJsonPath();
-
+        // load substation name & path
         final EditText nameEditText = findViewById(R.id.txt_edit_name);
-        EditText pathEditText = findViewById(R.id.txt_edit_path);
+        final EditText pathEditText = findViewById(R.id.txt_edit_path);
         nameEditText.setText(getFromSubs().getName());
         pathEditText.setText(getFromSubs().getPath());
 
-        final String oldName = nameEditText.getText().toString();
-        final String oldPath = pathEditText.getText().toString();
+        final String old_name = nameEditText.getText().toString();
+        final String old_path = pathEditText.getText().toString();
+        final File old_riskArea_file = new File(Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + "/" + old_name + ".json");
 
-        final File oldRiskAreaFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + "/" + oldName + ".json");
-
-        Button upload = (Button) findViewById(R.id.btn_edit_upload);
+        Button upload = findViewById(R.id.btn_edit_upload);
         upload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -70,58 +67,33 @@ public class Edit extends AppCompatActivity {
             }
         });
 
-        Button save = (Button) findViewById(R.id.btn_edit_save);
+        Button save = findViewById(R.id.btn_edit_save);
         save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                EditText newNameEditText = findViewById(R.id.txt_edit_name);
-                EditText newPathEditText = findViewById(R.id.txt_edit_path);
+                String new_name = ((EditText)findViewById(R.id.txt_edit_name)).getText().toString();
+                String new_path = ((EditText)findViewById(R.id.txt_edit_path)).getText().toString();
 
-                String newName = newNameEditText.getText().toString();
-                String newPath = newPathEditText.getText().toString();
+                Substation edited_substation = new Substation(new_name, new_path);
 
-                Substation editedSubstation = new Substation(newName, newPath);
-                ObjectMapper objectMapper = new ObjectMapper();
-                File subsJsonFile = new File(substationJsonPath);
-
-                Map<String, Substation> substationMap = new HashMap<>();;
-                TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
-
-                try {
-                    if(subsJsonFile.exists()){
-                        substationMap = objectMapper.readValue(subsJsonFile, typeRef);
-
-                        if(!oldName.equals(newName) ){
-                            if(substationMap.containsKey(newName)){
-                                Toast.makeText(getApplicationContext(),"Substation named " + newName + " already exists, please choose a new name",Toast.LENGTH_SHORT).show();
-                                nameEditText.setText("");
-                                return;
-                            }
-                        }
+                if(!old_name.equals(new_name)){
+                    if(db.isNameExists(new_name)){
+                        Toast.makeText(getApplicationContext(),"Substation named " + new_name + " already exists, please choose a new name",Toast.LENGTH_SHORT).show();
+                        nameEditText.setText("");
+                        return;
                     }
+                }
 
-                    substationMap.remove(oldName);
-                    substationMap.put(editedSubstation.getName(), editedSubstation);
-                    objectMapper.writeValue(new File(substationJsonPath), substationMap);
-
-                    // FIREBASE START //
-//                    final DocumentReference docRef = db.collection("Substations").document(oldEvent.getDatabaseID());
-//                    docRef.update("name", editedSubstation.getName());
-//                    docRef.update("path", editedSubstation.getPath());
-                    // FIREBASE END //
-
-                    File newRiskAreaFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + "/" + newName + ".json");
-                    oldRiskAreaFile.renameTo(newRiskAreaFile);
-
-                } catch (IOException e) {
-                    Log.d(TAG, "could not append json file while editing a substation because: " + e.getMessage());
+                if(!old_path.equals(new_path) || !old_name.equals(new_name)){
+                    db.editSubstationInDatabase(edited_substation, old_name, old_riskArea_file);
                 }
 
                 finish();
+
             }
         });
 
-        final Button delete = (Button) findViewById(R.id.btn_edit_delete);
+        final Button delete = findViewById(R.id.btn_edit_delete);
         delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -132,24 +104,7 @@ public class Edit extends AppCompatActivity {
                             case DialogInterface.BUTTON_POSITIVE:
 
                                 //Yes button clicked
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                File jsonFile = new File(substationJsonPath);
-
-                                Map<String, Substation> substationMap = new HashMap<>();;
-                                TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
-
-                                try {
-                                    if(jsonFile.exists()){
-                                        substationMap = objectMapper.readValue(jsonFile, typeRef);
-
-                                    }
-                                    substationMap.remove(oldName);
-                                    objectMapper.writeValue(new File(substationJsonPath), substationMap);
-                                    oldRiskAreaFile.delete();
-
-                                } catch (IOException e) {
-                                    Log.d(TAG, "could not append json file while deleting a substation because: " + e.getMessage());
-                                }
+                                db.removeSubstationFromDatabase(old_name, old_riskArea_file);
 
                                 finish();
                                 break;
@@ -162,8 +117,10 @@ public class Edit extends AppCompatActivity {
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(delete.getContext());
-                builder.setMessage("Are you sure ?\n\n\"" + nameEditText.getText() + "\" will be deleted permanently.").setPositiveButton("Yes", dialogClickListener)
-                        .setNegativeButton("No", dialogClickListener).show();
+                builder.setMessage("Are you sure ?\n\n\"" + nameEditText.getText() + "\" will be deleted permanently.")
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener)
+                        .show();
 
             }
         });
@@ -172,15 +129,16 @@ public class Edit extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        switch(requestCode){
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
 
             case 7:
-                if(resultCode==RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     EditText txt = findViewById(R.id.txt_edit_path);
                     String p = FileUtils.getPath(getApplicationContext(), data.getData());
 
-                    if(!p.endsWith(".las")){
-                        Toast.makeText(getApplicationContext(),"Supports only .las file",Toast.LENGTH_SHORT).show();
+                    if (!p.endsWith(".las")) {
+                        Toast.makeText(getApplicationContext(), "Supports only .las file", Toast.LENGTH_SHORT).show();
                         txt.setText("");
                         return;
                     }

@@ -30,9 +30,6 @@
             android:name=".Edit"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".UnityCaller"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".MainUnityActivity"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
             android:hardwareAccelerated="false"

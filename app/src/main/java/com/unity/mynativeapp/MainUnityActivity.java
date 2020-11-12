@@ -8,27 +8,22 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import android.text.Layout;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.company.product.OverrideUnityActivity;
 import com.unity3d.player.UnityPlayer;
 
-import static com.unity.mynativeapp.MainActivity.getPath;
+import static com.unity.mynativeapp.Database.getPath;
 
 public class MainUnityActivity extends OverrideUnityActivity {
 
@@ -89,7 +84,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
         isChanged = false;
 
-        String lasFilePath = getPath();
+        String lasFilePath = Database.getPath();
         UnitySendMessage("Main Camera", "update3DModelPath", lasFilePath);
         UnitySendMessage("Main Camera", "updateRiskAreaJsonPath", riskAreaJsonPath);
         UnitySendMessage("Main Camera", "start", "");
@@ -142,9 +137,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 } else{
                     showMainActivity("");
                 }
-//                Log.d(TAG,"closing unity");
-//                UnitySendMessage("Main Camera", "jsonUpdate", "");
-//                showMainActivity("");
+
             }
         });
         getUnityFrameLayout().addView(UI_BTN_back, buttonWidth, buttonHeight);

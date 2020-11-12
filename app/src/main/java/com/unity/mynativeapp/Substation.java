@@ -5,9 +5,7 @@ public class Substation {
     private String name;
     private String path;
 
-    public Substation(){
-
-    }
+    public Substation(){ }
 
     public Substation(String n, String p){
         name = n;
