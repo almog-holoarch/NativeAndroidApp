@@ -56,11 +56,11 @@ public class Add extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getString(R.string.TOAST_substation_named) + " " + name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                 }
 
-                else if(!nameIsValid(name)){
+                else if(!db.nameIsValid(name)){
                     Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_name),Toast.LENGTH_SHORT).show();
                 }
 
-                else if(!pathIsValid(path)){
+                else if(!db.pathIsValid(path)){
                     Toast.makeText(getApplicationContext(),getString(R.string.TOAST_upload_las),Toast.LENGTH_SHORT).show();
                 }
 
@@ -71,14 +71,6 @@ public class Add extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    boolean nameIsValid(String name){
-        return !name.equals("");
-    }
-
-    boolean pathIsValid(String path){
-        return !path.equals("");
     }
 
     @Override

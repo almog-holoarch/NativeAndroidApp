@@ -69,20 +69,29 @@ public class Edit extends AppCompatActivity {
 
                 Substation edited_substation = new Substation(new_name, new_path);
 
-                if(!old_name.equals(new_name)){
+                if(!old_name.equals(new_name) || !old_path.equals(new_path)){
                     if(db.isNameExists(new_name)){
                         Toast.makeText(getApplicationContext(),getString(R.string.TOAST_substation_named)+ " " + new_name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                         nameEditText.setText("");
-                        return;
+                    }
+
+                    else if(!db.nameIsValid(new_name)){
+                        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_name),Toast.LENGTH_SHORT).show();
+                    }
+
+                    else if(!db.pathIsValid(new_path)){
+                        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_upload_las),Toast.LENGTH_SHORT).show();
+                    }
+
+                    else{
+                        db.editSubstationInDatabase(edited_substation, old_name, old_riskArea_file);
+                        finish();
                     }
                 }
 
-                if(!old_path.equals(new_path) || !old_name.equals(new_name)){
-                    db.editSubstationInDatabase(edited_substation, old_name, old_riskArea_file);
+                else{
+                    finish();
                 }
-
-                finish();
-
             }
         });
 

@@ -99,6 +99,14 @@ public class Database extends AppCompatActivity {
         }
     }
 
+    boolean nameIsValid(String name){
+        return !name.equals("");
+    }
+
+    boolean pathIsValid(String path){
+        return !path.equals("");
+    }
+
     public void editSubstationInDatabase(Substation edited_substation, String old_name, File old_riskArea_file){
 
         try {
@@ -126,6 +134,9 @@ public class Database extends AppCompatActivity {
             substationMap.remove(old_name);
             objectMapper.writeValue(new File(substation_Json_Path), substationMap);
             old_riskArea_file.delete();
+
+            adapter.notifyItemRemoved(pos);
+            adapter.notifyDataSetChanged();
 
         } catch (IOException e) {
             Log.d(TAG, "could not append json file while deleting a substation because: " + e.getMessage());
