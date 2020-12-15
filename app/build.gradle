@@ -48,6 +48,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:18.0.0'
     implementation 'com.firebaseui:firebase-ui-firestore:4.1.0'
 
+    // csv files
+    implementation 'com.opencsv:opencsv:4.6'
+
+    // usb port
+    implementation 'com.github.felHR85:UsbSerial:6.1.0'
+
 }
 
 android {

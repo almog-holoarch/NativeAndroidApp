@@ -2,11 +2,16 @@ package com.unity.mynativeapp;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -20,14 +25,33 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import com.company.product.OverrideUnityActivity;
+import com.felhr.usbserial.UsbSerialDevice;
+import com.felhr.usbserial.UsbSerialInterface;
+import com.opencsv.CSVReader;
 import com.unity3d.player.UnityPlayer;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainUnityActivity extends OverrideUnityActivity {
 
     private final String TAG = "AlmogMainUnityActivity";
     static private String riskAreaJsonPath;
 
-    private  boolean isChanged;
+    //////////////////////////
+    //      SETTINGS        //
+    //////////////////////////
+
+    private static final int number_of_points_to_export = 8;
+    private static final int dimension = 3;
+    private static final int bytes_per_float = 4;
+    private int cubes_counter;
+    //////////////////////////
+
+    private boolean isChanged;
     Button UI_BTN_back;
 
     Button UI_BTN_tiltPlus;
@@ -62,8 +86,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
     int UI_ThirdSectionHeight = UI_SecondSectionHeight + buttonHeight * 3 + spacer;
     int UI_FourthSectionHeight = UI_ThirdSectionHeight + buttonHeight * 2 + spacer;
 
-    void isChangesTrue(){
-        Log.d(TAG,"entering chanig = true func");
+    void isChangesTrue() {
         isChanged = true;
     }
 
@@ -71,11 +94,15 @@ public class MainUnityActivity extends OverrideUnityActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ////////////////////////////////////// START
+
+        ///////////////////////////////////// END
+
         String cmdLine = updateUnityCommandLineArguments(getIntent().getStringExtra("unity"));
         getIntent().putExtra("unity", cmdLine);
         mUnityPlayer = new UnityPlayer(this, this);
         setContentView(com.unity3d.player.R.layout.activity_unity);
-        FrameLayout frameLayout = (FrameLayout)findViewById(com.unity3d.player.R.id.unity_player_layout);
+        FrameLayout frameLayout = (FrameLayout) findViewById(com.unity3d.player.R.id.unity_player_layout);
         frameLayout.addView(mUnityPlayer.getView());
         mUnityPlayer.requestFocus();
 
@@ -99,39 +126,39 @@ public class MainUnityActivity extends OverrideUnityActivity {
             public void onClick(View v) {
 
                 UnitySendMessage("Main Camera", "checkIfChanged", "");
-                if(isChanged){
+                if (isChanged) {
 
-                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-                                switch (which){
+                            switch (which) {
 
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        UnitySendMessage("Main Camera", "jsonUpdate", "");
-                                        Log.d(TAG,"closing unity and saving changes");
-                                        showMainActivity("");
-                                        break;
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    UnitySendMessage("Main Camera", "jsonUpdate", "");
+                                    Log.d(TAG, "closing unity and saving changes");
+                                    showMainActivity("");
+                                    break;
 
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        Log.d(TAG,"closing unity and saving changes");
-                                        showMainActivity("");
-                                        break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    Log.d(TAG, "closing unity and saving changes");
+                                    showMainActivity("");
+                                    break;
 
-                                }
                             }
-                        };
+                        }
+                    };
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
-                        builder
-                                .setMessage(getString(R.string.MESSAGE_save_changes) +"\n\n ")
-                                .setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
-                                .setNegativeButton(getString(R.string.BUTTON_no), dialogClickListener)
-                                .setNeutralButton(getString(R.string.BUTTON_cancel),dialogClickListener)
-                                .setCancelable(true)
-                                .show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
+                    builder
+                            .setMessage(getString(R.string.MESSAGE_save_changes) + "\n\n ")
+                            .setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
+                            .setNegativeButton(getString(R.string.BUTTON_no), dialogClickListener)
+                            .setNeutralButton(getString(R.string.BUTTON_cancel), dialogClickListener)
+                            .setCancelable(true)
+                            .show();
 
-                } else{
+                } else {
                     showMainActivity("");
                 }
 
@@ -151,8 +178,8 @@ public class MainUnityActivity extends OverrideUnityActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(600,240);
-        lp.setMargins(width - 650, height - 200 ,0, 0);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(600, 240);
+        lp.setMargins(width - 650, height - 200, 0, 0);
         iv.setLayoutParams(lp);
         getUnityFrameLayout().addView(iv);
 
@@ -171,8 +198,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
         UI_BTN_HeightPlus.setY(height - buttonHeight - 10);
         UI_BTN_HeightPlus.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler;
-            @Override public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
@@ -186,8 +215,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 }
                 return false;
             }
+
             Runnable mAction = new Runnable() {
-                @Override public void run() {
+                @Override
+                public void run() {
                     UnitySendMessage("Main Camera", "cubeActions", "heightUp");
                     mHandler.postDelayed(this, 30);
                 }
@@ -207,8 +238,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
         UI_BTN_HeightMinus.setY(height - group - 10);
         UI_BTN_HeightMinus.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler;
-            @Override public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
@@ -222,8 +255,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 }
                 return false;
             }
+
             Runnable mAction = new Runnable() {
-                @Override public void run() {
+                @Override
+                public void run() {
                     UnitySendMessage("Main Camera", "cubeActions", "heightDown");
                     mHandler.postDelayed(this, 30);
                 }
@@ -243,8 +278,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
         UI_BTN_cubeUp.setY(height - buttonHeight - 10);
         UI_BTN_cubeUp.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler;
-            @Override public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
@@ -258,8 +295,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 }
                 return false;
             }
+
             Runnable mAction = new Runnable() {
-                @Override public void run() {
+                @Override
+                public void run() {
                     UnitySendMessage("Main Camera", "cubeActions", "moveUp");
                     mHandler.postDelayed(this, 30);
                 }
@@ -279,8 +318,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
         UI_BTN_cubeDown.setY(height - group - 10);
         UI_BTN_cubeDown.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler;
-            @Override public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
@@ -294,8 +335,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 }
                 return false;
             }
+
             Runnable mAction = new Runnable() {
-                @Override public void run() {
+                @Override
+                public void run() {
                     UnitySendMessage("Main Camera", "cubeActions", "moveDown");
                     mHandler.postDelayed(this, 30);
                 }
@@ -320,12 +363,12 @@ public class MainUnityActivity extends OverrideUnityActivity {
         updateControlsToUnityFrame();
     }
 
-    public void vibrate(){
+    public void vibrate() {
         Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibe.vibrate(100);
     }
 
-    public void showDeleteButton(){
+    public void showDeleteButton() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -334,7 +377,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         });
     }
 
-    public void hideDeleteButton(){
+    public void hideDeleteButton() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -343,11 +386,11 @@ public class MainUnityActivity extends OverrideUnityActivity {
         });
     }
 
-    public void hideCubeControls(){
+    public void hideCubeControls() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(UI_BTN_HeightPlus != null){
+                if (UI_BTN_HeightPlus != null) {
                     UI_BTN_HeightPlus.setVisibility(View.GONE);
                     UI_BTN_HeightMinus.setVisibility(View.GONE);
                     UI_BTN_cubeUp.setVisibility(View.GONE);
@@ -362,7 +405,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void run() {
-                if(UI_BTN_HeightPlus != null){
+                if (UI_BTN_HeightPlus != null) {
                     UI_BTN_HeightPlus.setVisibility(View.VISIBLE);
                     UI_BTN_HeightMinus.setVisibility(View.VISIBLE);
                     UI_BTN_cubeUp.setVisibility(View.VISIBLE);
@@ -398,8 +441,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_tiltPlus.setY(UI_SecondSectionHeight);
                 UI_BTN_tiltPlus.setOnTouchListener(new View.OnTouchListener() {
                     private Handler mHandler;
-                    @Override public boolean onTouch(View v, MotionEvent event) {
-                        switch(event.getAction()) {
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 if (mHandler != null) return true;
                                 mHandler = new Handler();
@@ -413,8 +458,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                         }
                         return false;
                     }
+
                     Runnable mAction = new Runnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             UnitySendMessage("Main Camera", "TiltCamera", "-");
                             mHandler.postDelayed(this, 30);
                         }
@@ -449,8 +496,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_tiltMinus.setY(UI_SecondSectionHeight + (buttonHeight - group) * 2);
                 UI_BTN_tiltMinus.setOnTouchListener(new View.OnTouchListener() {
                     private Handler mHandler;
-                    @Override public boolean onTouch(View v, MotionEvent event) {
-                        switch(event.getAction()) {
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 if (mHandler != null) return true;
                                 mHandler = new Handler();
@@ -464,8 +513,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                         }
                         return false;
                     }
+
                     Runnable mAction = new Runnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             UnitySendMessage("Main Camera", "TiltCamera", "+");
                             mHandler.postDelayed(this, 30);
                         }
@@ -517,6 +568,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_addRiskArea.setY(UI_FourthSectionHeight);
                 UI_BTN_addRiskArea.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
+                        cubes_counter++;
                         UnitySendMessage("Main Camera", "addCube", "");
                     }
                 });
@@ -545,22 +597,23 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_delete = new Button(getApplicationContext());
                 UI_BTN_delete.setText(getString(R.string.BUTTON_U_delete));
                 UI_BTN_delete.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
-                UI_BTN_delete.setX(width-200);
-                UI_BTN_delete.setY(height-50);
+                UI_BTN_delete.setX(width - 200);
+                UI_BTN_delete.setY(height - 50);
                 UI_BTN_delete.setVisibility(View.GONE);
                 getUnityFrameLayout().addView(UI_BTN_delete, buttonWidth + 20, buttonHeight);
             }
         });
     }
 
-    public void deleteDialog(){
-        if(!isDialoging){
+    public void deleteDialog() {
+        if (!isDialoging) {
             isDialoging = true;
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
+                    switch (which) {
                         case DialogInterface.BUTTON_POSITIVE:
+                            cubes_counter--;
                             UnitySendMessage("Main Camera", "deleteRiskArea", "");
                             isDialoging = false;
                             break;
@@ -573,17 +626,17 @@ public class MainUnityActivity extends OverrideUnityActivity {
             };
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
-            builder.setMessage(getString(R.string.MESSAGE_are_you_sure)+ "\n\n" + getString(R.string.MESSAGE_riskArea_delete)).setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
+            builder.setMessage(getString(R.string.MESSAGE_are_you_sure) + "\n\n" + getString(R.string.MESSAGE_riskArea_delete)).setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
                     .setNegativeButton(getString(R.string.BUTTON_no), dialogClickListener).show();
         }
     }
 
-    public void EditBlockMessage(){
-        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_edit_block),Toast.LENGTH_SHORT).show();
+    public void EditBlockMessage() {
+        Toast.makeText(getApplicationContext(), getString(R.string.TOAST_edit_block), Toast.LENGTH_SHORT).show();
     }
 
-    public void EditUnblockMessage(){
-        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_edit_enable),Toast.LENGTH_SHORT).show();
+    public void EditUnblockMessage() {
+        Toast.makeText(getApplicationContext(), getString(R.string.TOAST_edit_enable), Toast.LENGTH_SHORT).show();
     }
 
     public void updateControlsToUnityFrame() {
@@ -596,8 +649,8 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 int height = displayMetrics.heightPixels;
                 int width = displayMetrics.widthPixels;
 
-                UI_BTN_delete.setX(width-200);
-                UI_BTN_delete.setY(height-50);
+                UI_BTN_delete.setX(width - 200);
+                UI_BTN_delete.setY(height - 50);
 
                 UI_BTN_export.setX(width - 200);
                 UI_BTN_export.setY(UI_firstSectionHeight);
@@ -607,10 +660,235 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_cubeUp.setY(height - buttonHeight - 10);
                 UI_BTN_cubeDown.setY(height - group - 10);
             }
-         });
+        });
     }
 
-    static public void updateRiskAreaJsonPath(String str){
+    static public void updateRiskAreaJsonPath(String str) {
         riskAreaJsonPath = str;
     }
+
+    void exportPoints() {
+
+        if(cubes_counter == 0){
+            Toast.makeText(MainUnityActivity.this, "There are no risk areas to export", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+//        //// START
+        // port setup & open
+        UsbDeviceConnection usbConnection;
+
+        String ACTION_USB_PERMISSION = "com.almog.usbpermission";
+        UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> usbDevices = usbManager.getDeviceList();
+
+        UsbDevice device;
+
+        if (!usbDevices.isEmpty()) {
+
+            for (Map.Entry<String, UsbDevice> entry : usbDevices.entrySet()) {
+                device = entry.getValue();
+                if (!usbManager.hasPermission(device)) {
+
+                    PendingIntent pi = PendingIntent.getBroadcast(this, 0,
+                            new Intent(ACTION_USB_PERMISSION), 0);
+                    usbManager.requestPermission(device, pi);
+                }
+
+                else {
+                    usbConnection = usbManager.openDevice(device);
+                    final UsbSerialDevice serial = UsbSerialDevice.createUsbSerialDevice(device, usbConnection);
+
+                    serial.open();
+
+                    if (!serial.isOpen()) {
+                        Log.d(TAG, "serial is not open.");
+                    }
+
+                    serial.setBaudRate(115200);
+                    serial.setDataBits(UsbSerialInterface.DATA_BITS_8);
+                    serial.setParity(UsbSerialInterface.PARITY_NONE);
+                    serial.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
+
+                    Log.d(TAG, "sending hello to device " + device.getDeviceId() + " " + device.getProductId() + " " + device.getDeviceName());
+                    Log.d(TAG, "counter = " + cubes_counter);
+                    byte[] arr = new byte[4];
+
+                    arr[0] = '#';
+
+                    arr[1] = arr[2] = arr[3] =  '*';
+
+                    serial.write(arr);
+
+                    UsbSerialInterface.UsbReadCallback cb = new UsbSerialInterface.UsbReadCallback() {
+                        @Override
+                        public void onReceivedData(byte[] arg0) {
+                            Log.d(TAG, "received: " + arg0);
+                            final String s = new String(arg0, StandardCharsets.UTF_8);
+                            if (s.startsWith("OK")) {
+
+                                // read csv file
+                                try {
+
+                                    //// hi START
+                                    byte[] arr = new byte[24];
+                                    arr[0] = '#';
+
+                                    // counter
+                                    arr[1] = (byte) ((cubes_counter & 0xFF00) >> 8);
+                                    arr[2] = (byte) (cubes_counter & 0x00FF);
+
+                                    // x1
+                                    arr[3] = (byte) ((floatToShort(1.31f*100) & 0xFF00) >> 8);
+                                    arr[4] = (byte) (floatToShort(1.31f*100) & 0x00FF);
+
+                                    // y1
+                                    arr[5] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
+                                    arr[6] = (byte) (floatToShort(2.59f*100) & 0x00FF);
+
+                                    // z1
+                                    arr[7] = (byte) ((floatToShort(-0.25f*100) & 0xFF00) >> 8);
+                                    arr[8] = (byte) (floatToShort(-0.25f*100) & 0x00FF);
+
+                                    // x2
+                                    arr[9] = (byte) ((floatToShort(2.4325f*100f) & 0xFF00) >> 8);
+                                    arr[10] = (byte) (floatToShort(2.4325f*100f) & 0x00FF);
+
+                                    // y2
+                                    arr[11] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
+                                    arr[12] = (byte) (floatToShort(2.59f*100) & 0x00FF);
+
+                                    // z2
+                                    arr[13] = (byte) ((floatToShort(-0.9038f*100) & 0xFF00) >> 8);
+                                    arr[14] = (byte) (floatToShort(-0.9038f*100) & 0x00FF);
+
+                                    // x3
+                                    arr[15] = (byte) ((floatToShort(1.34f*100) & 0xFF00) >> 8);
+                                    arr[16] = (byte) (floatToShort(1.34f*100) & 0x00FF);
+
+                                    // y3
+                                    arr[17] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
+                                    arr[18] = (byte) (floatToShort(2.59f*100) & 0x00FF);
+
+                                    // z3
+                                    arr[19] = (byte) ((floatToShort(-1.5533f*100) & 0xFF00) >> 8);
+                                    arr[20] = (byte) (floatToShort(-1.5533f*100) & 0x00FF);
+
+                                    arr[21] = arr[22] = arr[23] =  '*';
+
+                                    serial.write(arr);
+
+                                    //// hi END
+
+                                    String export_path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "files" + File.separator + "export.csv";
+
+                                    CSVReader reader = new CSVReader(new FileReader(export_path));
+                                    String[] nextLine;
+                                    while ((nextLine = reader.readNext()) != null) {
+
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                Log.d(TAG, "device ID is: " + s);
+                                                Toast.makeText(MainUnityActivity.this, "Exporting risk areas to device #" + s.substring(2), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                                        // for each line (center point, vertex point) send data via serial
+                                        // nextLine[] is an array of values from the line
+                                        short[] shorts = new short[number_of_points_to_export * dimension];
+
+                                        if (nextLine[0].length() > 0) {
+
+                                            for (int i = 0; i < number_of_points_to_export * dimension; i++) {
+                                                shorts[i] = floatToShort(Float.parseFloat(nextLine[i])*100); // * 100 for meter to cm
+                                            }
+
+                                            byte[]  buf = ShortToByte_Twiddle_Method(shorts);
+                                            //byte[] buf = floatArrayToBytes(floats);
+
+                                            serial.write(buf);
+                                        }
+                                    }
+
+                                } catch (IOException e) {
+                                    Toast.makeText(MainUnityActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        }
+
+                    };
+
+                    serial.read(cb);
+                }
+            }
+        }
+//        /// END
+
+    }
+
+    byte [] ShortToByte_Twiddle_Method(short [] input)
+    {
+        int short_index, byte_index;
+        int iterations = input.length;
+
+        int size = (input.length * 2) + 4;
+        byte [] buffer = new byte[size];
+
+        buffer[0] = '#';
+        short_index = 0;
+        byte_index = 1;
+
+        for(/*NOP*/; short_index != iterations; /*NOP*/)
+        {
+            buffer[byte_index]     = (byte) ((input[short_index] & 0xFF00) >> 8);
+            buffer[byte_index + 1] = (byte) (input[short_index] & 0x00FF);
+
+            ++short_index; byte_index += 2;
+        }
+
+        buffer[size-3] = buffer[size-2] = buffer[size-1] = '*';
+
+        return buffer;
+    }
+
+    public static short floatToShort(float x) {
+        if (x < Short.MIN_VALUE) {
+            return Short.MIN_VALUE;
+        }
+        if (x > Short.MAX_VALUE) {
+            return Short.MAX_VALUE;
+        }
+        return (short) Math.round(x);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // TODO: dispose serials serial.close();
+    }
+
+//    public static byte[] floatArrayToBytes(float[] d) {
+//        byte[] r = new byte[d.length * bytes_per_float];
+//        for (int i = 0; i < d.length; i++) {
+//            byte[] s = floatToBytes(d[i]);
+//            for (int j = 0; j < bytes_per_float; j++)
+//                r[4 * i + j] = s[j];
+//        }
+//        return r;
+//    }
+//
+//    public static byte[] floatToBytes(float d) {
+//        int i = Float.floatToRawIntBits(d);
+//        return intToBytes(i);
+//    }
+//
+//    public static byte[] intToBytes(int v) {
+//        byte[] r = new byte[bytes_per_float];
+//        for (int i = 0; i < bytes_per_float; i++) {
+//            r[i] = (byte) ((v >>> (i * 8)) & 0xFF);
+//        }
+//        return r;
+//    }
+
 }
