@@ -71,7 +71,7 @@ public class Database extends AppCompatActivity {
         Log.d(TAG, "path 2 : " + riskAreaJsonPath);
 
         // writing to a json file
-        Substation addedSubstation = new Substation(new_sub.getName(), new_sub.getPath());
+        Substation addedSubstation = new Substation(new_sub.getName(), new_sub.getPath(), new_sub.getX_offset(), new_sub.getY_offset(), new_sub.getZ_offset(), new_sub.getX_rotate(), new_sub.getY_rotate(), new_sub.getZ_rotate());
         ObjectMapper objectMapper = new ObjectMapper();
 
         //creating a JSON file for the new added substation
@@ -215,7 +215,7 @@ public class Database extends AppCompatActivity {
                 subs.clear();
 
                 for (Map.Entry<String,Substation> entry : substationMap.entrySet()){
-                    addToSubs(entry.getKey(), entry.getValue().getPath());
+                    addToSubs(entry.getKey(), entry.getValue().getPath(), entry.getValue().getX_offset(), entry.getValue().getY_offset(), entry.getValue().getZ_offset(), entry.getValue().getX_rotate(), entry.getValue().getY_rotate(), entry.getValue().getZ_rotate());
                 }
 
             } else{
@@ -235,8 +235,8 @@ public class Database extends AppCompatActivity {
         }
     }
 
-    public static void addToSubs(String name, String path){
-        subs.add(new Substation(name, path));
+    public static void addToSubs(String name, String path, String xo, String yo, String zo, String xr, String yr, String zr){
+        subs.add(new Substation(name, path, xo, yo, zo, xr, yr, zr));
         sortList();
         adapter.notifyDataSetChanged();
     }

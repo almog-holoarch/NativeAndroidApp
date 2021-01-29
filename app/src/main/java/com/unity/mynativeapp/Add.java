@@ -52,6 +52,13 @@ public class Add extends AppCompatActivity {
                 String name = ((EditText)findViewById(R.id.txt_add_name)).getText().toString();
                 String path = ((EditText)findViewById(R.id.txt_add_path)).getText().toString();
 
+                String xo = ((EditText)findViewById(R.id.x_offset)).getText().toString();
+                String yo = ((EditText)findViewById(R.id.y_offset)).getText().toString();
+                String zo = ((EditText)findViewById(R.id.z_offset)).getText().toString();
+                String xr = ((EditText)findViewById(R.id.x_rotate)).getText().toString();
+                String yr = ((EditText)findViewById(R.id.y_rotate)).getText().toString();
+                String zr = ((EditText)findViewById(R.id.z_rotate)).getText().toString();
+
                 if (db.isNameExists(name)){
                     Toast.makeText(getApplicationContext(), getString(R.string.TOAST_substation_named) + " " + name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                 }
@@ -65,7 +72,7 @@ public class Add extends AppCompatActivity {
                 }
 
                 else {
-                    Substation new_sub = new Substation(name, path);
+                    Substation new_sub = new Substation(name, path, xo, yo, zo, xr, yr, zr);
                     db.addSubstationToDatabase(new_sub);
                     finish();
                 }

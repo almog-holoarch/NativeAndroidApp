@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.util.Log;
 import java.io.File;
 import static com.unity.mynativeapp.Database.getFromSubs;
 
@@ -43,11 +44,34 @@ public class Edit extends AppCompatActivity {
         // load substation name & path
         final EditText nameEditText = findViewById(R.id.txt_edit_name);
         final EditText pathEditText = findViewById(R.id.txt_edit_path);
+
+        final EditText xo = findViewById(R.id.x_offset_edit);
+        final EditText yo = findViewById(R.id.y_offset_edit);
+        final EditText zo = findViewById(R.id.z_offset_edit);
+        final EditText xr = findViewById(R.id.x_rotate_edit);
+        final EditText yr = findViewById(R.id.y_rotate_edit);
+        final EditText zr = findViewById(R.id.z_rotate_edit);
+
+        String xos = getFromSubs().getX_offset();
+        String yos = getFromSubs().getY_offset();
+        String zos = getFromSubs().getZ_offset();
+        String xrs = getFromSubs().getX_rotate();
+        String yrs = getFromSubs().getY_rotate();
+        String zrs = getFromSubs().getZ_rotate();
+
         nameEditText.setText(getFromSubs().getName());
         pathEditText.setText(getFromSubs().getPath());
 
+        xo.setText(xos);
+        yo.setText(yos);
+        zo.setText(zos);
+        xr.setText(xrs);
+        yr.setText(yrs);
+        zr.setText(zrs);
+
         final String old_name = nameEditText.getText().toString();
         final String old_path = pathEditText.getText().toString();
+
         final File old_riskArea_file = new File(Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + "/" + old_name + ".json");
 
         Button upload = findViewById(R.id.btn_edit_upload);
@@ -67,10 +91,17 @@ public class Edit extends AppCompatActivity {
                 String new_name = ((EditText)findViewById(R.id.txt_edit_name)).getText().toString();
                 String new_path = ((EditText)findViewById(R.id.txt_edit_path)).getText().toString();
 
-                Substation edited_substation = new Substation(new_name, new_path);
+                String new_xo = ((EditText)findViewById(R.id.x_offset_edit)).getText().toString();
+                String new_yo = ((EditText)findViewById(R.id.y_offset_edit)).getText().toString();
+                String new_zo = ((EditText)findViewById(R.id.z_offset_edit)).getText().toString();
+                String new_xr = ((EditText)findViewById(R.id.x_rotate_edit)).getText().toString();
+                String new_yr = ((EditText)findViewById(R.id.y_rotate_edit)).getText().toString();
+                String new_zr = ((EditText)findViewById(R.id.z_rotate_edit)).getText().toString();
+
+                Substation edited_substation = new Substation(new_name, new_path, new_xo, new_yo, new_zo, new_xr, new_yr, new_zr);
 
                 if(!old_name.equals(new_name) || !old_path.equals(new_path)){
-                    if(db.isNameExists(new_name)){
+                    if(!old_name.equals(new_name) && db.isNameExists(new_name)){
                         Toast.makeText(getApplicationContext(),getString(R.string.TOAST_substation_named)+ " " + new_name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                         nameEditText.setText("");
                     }

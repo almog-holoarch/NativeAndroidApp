@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.company.product.OverrideUnityActivity;
 import com.felhr.usbserial.UsbSerialDevice;
@@ -49,7 +50,27 @@ public class MainUnityActivity extends OverrideUnityActivity {
     private static final int dimension = 3;
     private static final int bytes_per_float = 4;
     private int cubes_counter;
-    //////////////////////////
+
+    ///////////////////////
+    //      DEBUG        //
+    ///////////////////////
+
+    TextView x_text = null;
+    TextView y_text = null;
+    TextView z_text = null;
+    TextView delta_x_text = null;
+    TextView delta_y_text = null;
+    TextView delta_z_text = null;
+
+    float max_x, max_y, max_z = Float.NEGATIVE_INFINITY;
+    float min_x, min_y, min_z = Float.POSITIVE_INFINITY
+            ;
+
+    boolean debug_created = false;
+
+    ////////////////////
+    //      UI        //
+    ////////////////////
 
     private boolean isChanged;
     Button UI_BTN_back;
@@ -109,8 +130,13 @@ public class MainUnityActivity extends OverrideUnityActivity {
         isChanged = false;
 
         String lasFilePath = Database.getPath();
+        String offset_vector = Database.getFromSubs().getX_offset() + "," + Database.getFromSubs().getY_offset() + "," + Database.getFromSubs().getZ_offset();
+        String rotate_vector = Database.getFromSubs().getX_rotate() + "," + Database.getFromSubs().getY_rotate() + "," + Database.getFromSubs().getZ_rotate();
+
         UnitySendMessage("Main Camera", "update3DModelPath", lasFilePath);
         UnitySendMessage("Main Camera", "updateRiskAreaJsonPath", riskAreaJsonPath);
+        UnitySendMessage("Main Camera", "updateOffsetVector", offset_vector);
+        UnitySendMessage("Main Camera", "updateRotateVector", rotate_vector);
         UnitySendMessage("Main Camera", "start", "");
 
         ////////////////////
@@ -141,7 +167,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
-                                    Log.d(TAG, "closing unity and saving changes");
+                                    Log.d(TAG, "closing unity");
                                     showMainActivity("");
                                     break;
 
@@ -568,7 +594,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_addRiskArea.setY(UI_FourthSectionHeight);
                 UI_BTN_addRiskArea.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        cubes_counter++;
+                        //cubes_counter++;
                         UnitySendMessage("Main Camera", "addCube", "");
                     }
                 });
@@ -613,7 +639,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case DialogInterface.BUTTON_POSITIVE:
-                            cubes_counter--;
+                            UnitySendMessage("Main Camera", "decreaseCubeCounter", "");
                             UnitySendMessage("Main Camera", "deleteRiskArea", "");
                             isDialoging = false;
                             break;
@@ -669,12 +695,26 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
     void exportPoints() {
 
+        Log.d(TAG, "COUNTER = " + cubes_counter);
+
         if(cubes_counter == 0){
             Toast.makeText(MainUnityActivity.this, "There are no risk areas to export", Toast.LENGTH_LONG).show();
             return;
         }
 
-//        //// START
+        // DEBUG - TODO : remove
+        if(debug_created)
+        {
+            clearDebugText();
+            max_x = max_y = max_z = Float.MIN_VALUE;
+            min_x = min_y = min_z = Float.MAX_VALUE;
+        } else
+        {
+            addDebugText();
+            debug_created = true;
+        }
+
+//       //// START
         // port setup & open
         UsbDeviceConnection usbConnection;
 
@@ -712,25 +752,22 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
                     Log.d(TAG, "sending hello to device " + device.getDeviceId() + " " + device.getProductId() + " " + device.getDeviceName());
                     Log.d(TAG, "counter = " + cubes_counter);
+
                     byte[] arr = new byte[4];
-
                     arr[0] = '#';
-
                     arr[1] = arr[2] = arr[3] =  '*';
-
                     serial.write(arr);
-
                     UsbSerialInterface.UsbReadCallback cb = new UsbSerialInterface.UsbReadCallback() {
                         @Override
                         public void onReceivedData(byte[] arg0) {
                             Log.d(TAG, "received: " + arg0);
                             final String s = new String(arg0, StandardCharsets.UTF_8);
+
                             if (s.startsWith("OK")) {
 
                                 // read csv file
                                 try {
 
-                                    //// hi START
                                     byte[] arr = new byte[24];
                                     arr[0] = '#';
 
@@ -738,47 +775,39 @@ public class MainUnityActivity extends OverrideUnityActivity {
                                     arr[1] = (byte) ((cubes_counter & 0xFF00) >> 8);
                                     arr[2] = (byte) (cubes_counter & 0x00FF);
 
+                                    // HARD CODED START - new office scan with old anchor
                                     // x1
-                                    arr[3] = (byte) ((floatToShort(1.31f*100) & 0xFF00) >> 8);
-                                    arr[4] = (byte) (floatToShort(1.31f*100) & 0x00FF);
-
+                                    arr[3] = (byte) ((floatToShort(-1.31f*100) & 0xFF00) >> 8);
+                                    arr[4] = (byte) (floatToShort(-1.31f*100) & 0x00FF);
                                     // y1
                                     arr[5] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
                                     arr[6] = (byte) (floatToShort(2.59f*100) & 0x00FF);
-
                                     // z1
-                                    arr[7] = (byte) ((floatToShort(-0.25f*100) & 0xFF00) >> 8);
-                                    arr[8] = (byte) (floatToShort(-0.25f*100) & 0x00FF);
-
+                                    arr[7] = (byte) ((floatToShort(0.25f*100) & 0xFF00) >> 8);
+                                    arr[8] = (byte) (floatToShort(0.25f*100) & 0x00FF);
                                     // x2
-                                    arr[9] = (byte) ((floatToShort(2.4325f*100f) & 0xFF00) >> 8);
-                                    arr[10] = (byte) (floatToShort(2.4325f*100f) & 0x00FF);
-
+                                    arr[9] = (byte) ((floatToShort(-2.4325f*100f) & 0xFF00) >> 8);
+                                    arr[10] = (byte) (floatToShort(-2.4325f*100f) & 0x00FF);
                                     // y2
                                     arr[11] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
                                     arr[12] = (byte) (floatToShort(2.59f*100) & 0x00FF);
-
                                     // z2
-                                    arr[13] = (byte) ((floatToShort(-0.9038f*100) & 0xFF00) >> 8);
-                                    arr[14] = (byte) (floatToShort(-0.9038f*100) & 0x00FF);
-
+                                    arr[13] = (byte) ((floatToShort(0.9038f*100) & 0xFF00) >> 8);
+                                    arr[14] = (byte) (floatToShort(0.9038f*100) & 0x00FF);
                                     // x3
-                                    arr[15] = (byte) ((floatToShort(1.34f*100) & 0xFF00) >> 8);
-                                    arr[16] = (byte) (floatToShort(1.34f*100) & 0x00FF);
-
+                                    arr[15] = (byte) ((floatToShort(-1.34f*100) & 0xFF00) >> 8);
+                                    arr[16] = (byte) (floatToShort(-1.34f*100) & 0x00FF);
                                     // y3
                                     arr[17] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
                                     arr[18] = (byte) (floatToShort(2.59f*100) & 0x00FF);
-
                                     // z3
-                                    arr[19] = (byte) ((floatToShort(-1.5533f*100) & 0xFF00) >> 8);
-                                    arr[20] = (byte) (floatToShort(-1.5533f*100) & 0x00FF);
+                                    arr[19] = (byte) ((floatToShort(1.5533f*100) & 0xFF00) >> 8);
+                                    arr[20] = (byte) (floatToShort(1.5533f*100) & 0x00FF);
+                                    // HARD CODED END
 
                                     arr[21] = arr[22] = arr[23] =  '*';
 
                                     serial.write(arr);
-
-                                    //// hi END
 
                                     String export_path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "files" + File.separator + "export.csv";
 
@@ -815,6 +844,25 @@ public class MainUnityActivity extends OverrideUnityActivity {
                                 }
 
                             }
+
+                            else if(s.startsWith("P") && s.endsWith("***")) {
+                                Log.d(TAG, "string is: " + s);
+
+
+                                // update DEBUG text TODO: remove
+                                updateDebugText(s);
+
+
+                                UnitySendMessage("Main Camera", "devicePositionUpdate",  s.substring(2));
+                            }
+
+                            else
+                            {
+                                Log.d(TAG, "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS: " + s);
+
+                                //serial.close();
+                                //return;
+                            }
                         }
 
                     };
@@ -824,6 +872,115 @@ public class MainUnityActivity extends OverrideUnityActivity {
             }
         }
 //        /// END
+
+    }
+
+    void updateDebugText(String s){
+
+        final String[] split = s.split(",");
+
+        String d1 = split[1], d2 = split[2] ,d3 = split[3];
+        float f1 = Float.valueOf(d1)/100, f2 = Float.valueOf(d2)/100, f3 = Float.valueOf(d3)/100;
+
+        if(f1 > 6 || f2 > 6 || f3 > 6)
+        {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    x_text.setText("Lost signal");
+                    y_text.setText("Lost signal");
+                    z_text.setText("Lost signal");
+                }
+            });
+        }
+
+        else
+        {
+            final float x = Float.parseFloat(split[4]) / 100;
+            final float y = Float.parseFloat(split[5]) / 100;
+            final float z = Float.parseFloat(split[6]) / 100;
+
+            if(x < min_x) min_x = x;
+            if(y < min_y) min_y = y;
+            if(z < min_z) min_z = z;
+
+            if(x > max_x) max_x = x;
+            if(y > max_y) max_y = y;
+            if(z > max_z) max_z = z;
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    x_text.setText(String.format("%.2f", x));
+                    y_text.setText(String.format("%.2f", y));
+                    z_text.setText(String.format("%.2f", z));
+                    delta_x_text.setText(String.format("%.2f", max_x - min_x));
+                    delta_y_text.setText(String.format("%.2f", max_y - min_y));
+                    delta_z_text.setText(String.format("%.2f", max_z - min_z));
+                }
+            });
+        }
+    }
+
+    void clearDebugText(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                x_text.setText("");
+                y_text.setText("");
+                z_text.setText("");
+                delta_x_text.setText("");
+                delta_y_text.setText("");
+                delta_z_text.setText("");
+            }
+        });
+    }
+
+    void addDebugText(){
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+
+        // ADD TEXT FOR X DEBUG
+        x_text = new TextView(getApplicationContext());
+        x_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize + 10);
+        x_text.setX(width - 600);
+        x_text.setY(height - 150);
+        delta_x_text = new TextView(getApplicationContext());
+        delta_x_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize + 10);
+        delta_x_text.setX(width - 600);
+        delta_x_text.setY(height - 100);
+
+        // ADD TEXT FOR Y DEBUG
+        y_text = new TextView(getApplicationContext());
+        y_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize + 10);
+        y_text.setX(width - 400);
+        y_text.setY(height - 150);
+        delta_y_text = new TextView(getApplicationContext());
+        delta_y_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize + 10);
+        delta_y_text.setX(width - 400);
+        delta_y_text.setY(height - 100);
+
+        // ADD TEXT FOR Z DEBUG
+        z_text = new TextView(getApplicationContext());
+        z_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize + 10);
+        z_text.setX(width - 200);
+        z_text.setY(height - 150);
+        delta_z_text = new TextView(getApplicationContext());
+        delta_z_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize + 10);
+        delta_z_text.setX(width - 200);
+        delta_z_text.setY(height - 100);
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                getUnityFrameLayout().addView(x_text, buttonWidth + 20, buttonHeight);
+                getUnityFrameLayout().addView(y_text, buttonWidth + 20, buttonHeight);
+                getUnityFrameLayout().addView(z_text, buttonWidth + 20, buttonHeight);
+                getUnityFrameLayout().addView(delta_x_text, buttonWidth + 20, buttonHeight);
+                getUnityFrameLayout().addView(delta_y_text, buttonWidth + 20, buttonHeight);
+                getUnityFrameLayout().addView(delta_z_text, buttonWidth + 20, buttonHeight);
+
+            }
+        });
 
     }
 
@@ -866,6 +1023,18 @@ public class MainUnityActivity extends OverrideUnityActivity {
     protected void onDestroy() {
         super.onDestroy();
         // TODO: dispose serials serial.close();
+    }
+
+    public void messageCantAddCubeIn3D(){
+        Toast.makeText(getApplicationContext(), getString(R.string.TOAST_cant_add_cube_in_3D), Toast.LENGTH_SHORT).show();
+    }
+
+    public void increaseCubeCounter(){
+        cubes_counter++;
+    }
+
+    public void decreaseCubeCounter(){
+        cubes_counter--;
     }
 
 //    public static byte[] floatArrayToBytes(float[] d) {

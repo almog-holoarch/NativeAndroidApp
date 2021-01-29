@@ -12,7 +12,7 @@
     <string name="TITLE_previous"                   >Previous</string>
     <string name="TITLE_addTitle"                   >Add</string>
     <string name="TITLE_editTitle"                  >Edit</string>
-    <string name="TITLE_version"                    >Version 1.1.4</string>
+    <string name="TITLE_version"                    >Version 1.1.5</string>
 
     <!-- Message -->
     <string name="MESSAGE_empty_list"               >No substations to display</string>
@@ -31,6 +31,7 @@
     <string name="TOAST_choose_name"               >Choose A substation name</string>
     <string name="TOAST_substation_named"          >Substation named</string>
     <string name="TOAST_already_exists"            >already exists</string>
+    <string name="TOAST_cant_add_cube_in_3D"       >Cannot add risk area in 3D</string>
 
     <!-- Android Buttons -->
     <string name="BUTTON_upload"                    >Upload</string>
