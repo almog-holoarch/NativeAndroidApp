@@ -36,13 +36,13 @@ public class AddRoll extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                String roll = ((EditText)findViewById(R.id.txt_add_roll_name)).getText().toString();
+                Roll roll = new Roll(((EditText)findViewById(R.id.txt_add_roll_name)).getText().toString());
 
-                if (db.isRollExists(roll)){
+                if (db.isRollExists(roll.getName())){
                     Toast.makeText(getApplicationContext(), getString(R.string.TOAST_roll_named) + " " + roll + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                 }
 
-                else if(!db.rollIsValid(roll)){
+                else if(!db.rollIsValid(roll.getName())){
                     Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_roll),Toast.LENGTH_SHORT).show();
                 }
 

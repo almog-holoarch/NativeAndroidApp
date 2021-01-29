@@ -77,7 +77,7 @@ public class SubstationsAdapter extends RecyclerView.Adapter<SubstationsAdapter.
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View substationView = inflater.inflate(R.layout.node, parent, false);
+        View substationView = inflater.inflate(R.layout.subs_node, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(substationView);
 

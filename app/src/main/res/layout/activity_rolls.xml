@@ -32,6 +32,33 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rollsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <TextView
+        android:id="@+id/emptyRollsListTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/MESSAGE_rolls_empty_list"
+
+        tools:layout_editor_absoluteX="0dp" />
+
+
+
+
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/rollsFloatingActionButton"
         android:layout_width="match_parent"

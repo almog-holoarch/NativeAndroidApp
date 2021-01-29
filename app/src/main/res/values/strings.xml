@@ -20,7 +20,8 @@
     <string name="TITLE_version">Version 1.1.5</string>
 
     <!-- Message -->
-    <string name="MESSAGE_empty_list">No substations to display</string>
+    <string name="MESSAGE_subs_empty_list">No substations to display</string>
+    <string name="MESSAGE_rolls_empty_list">No rolls to display</string>
     <string name="MESSAGE_save_changes">Do you want to save changes ?</string>
     <string name="MESSAGE_are_you_sure">Are you sure ?</string>
     <string name="MESSAGE_riskArea_delete">Risk area will be deleted permanently</string>
