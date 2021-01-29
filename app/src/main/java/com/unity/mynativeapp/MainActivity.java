@@ -1,20 +1,14 @@
 package com.unity.mynativeapp;
 
 import android.Manifest;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
-import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,14 +18,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.felhr.usbserial.UsbSerialDevice;
-import com.felhr.usbserial.UsbSerialInterface;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +31,32 @@ public class MainActivity extends AppCompatActivity {
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE };
     static private TextView text_empty;
     private Database db;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+
+            case R.id.action_manage_rolls:
+                intent = new Intent(MainActivity.this, RollsActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_contact_us:
+                //intent = new Intent(MainActivity.this, ContactActivity.class);
+                //startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.list);
         db.setUpSubstationsRecyclerView(this.getApplicationContext(), recyclerView);
 
-        FloatingActionButton add = findViewById(R.id.floatingActionButton);
+        FloatingActionButton add = findViewById(R.id.MainFloatingActionButton);
         add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Add.class);
+                Intent intent = new Intent(MainActivity.this, AddSubstation.class);
                 startActivity(intent);
             }
         });
@@ -103,8 +119,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
@@ -122,11 +136,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-
-
         db.updateSubstationsRecyclerView();
     }
 

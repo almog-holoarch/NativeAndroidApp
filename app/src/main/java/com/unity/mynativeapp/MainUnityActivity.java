@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,6 +136,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
         UnitySendMessage("Main Camera", "update3DModelPath", lasFilePath);
         UnitySendMessage("Main Camera", "updateRiskAreaJsonPath", riskAreaJsonPath);
+
+        Log.d(TAG,"offset from android = " + offset_vector);
+        Log.d(TAG,"rotate from android = " + rotate_vector);
+
         UnitySendMessage("Main Camera", "updateOffsetVector", offset_vector);
         UnitySendMessage("Main Camera", "updateRotateVector", rotate_vector);
         UnitySendMessage("Main Camera", "start", "");
@@ -594,8 +599,55 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_addRiskArea.setY(UI_FourthSectionHeight);
                 UI_BTN_addRiskArea.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        //cubes_counter++;
-                        UnitySendMessage("Main Camera", "addCube", "");
+
+                        //START
+                        final CharSequence[] items = {"Roll1","Roll2","Roll3","Roll4","Roll5","Roll6","Roll7","Roll8","Roll9","Roll10","Roll11","Roll12","Roll13","Roll14","Roll15","Roll16"};
+
+                        final ArrayList selectedItems = new ArrayList();
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainUnityActivity.this);
+                        builder.setTitle("Please choose rolls for this risk area");
+
+                        builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                if (isChecked) {
+                                    selectedItems.add(which);
+                                } else if (selectedItems.contains(which)) {
+                                    selectedItems.remove(Integer.valueOf(which));
+                                }
+                            }
+                        });
+
+                        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                StringBuilder arg = new StringBuilder();
+                                int i = 0;
+                                for (Object index : selectedItems)
+                                {
+                                    i++;
+                                    arg.append(items[(int)index]);
+                                    if(i < selectedItems.size()){
+                                        arg.append(",");
+                                    }
+                                }
+                                UnitySendMessage("Main Camera", "addCube", arg.toString());
+                            }
+                        });
+
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        //builder.create();
+                        builder.show();
+                        //END
+
+
                     }
                 });
                 getUnityFrameLayout().addView(UI_BTN_addRiskArea, buttonWidth, buttonHeight);
@@ -629,6 +681,47 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 getUnityFrameLayout().addView(UI_BTN_delete, buttonWidth + 20, buttonHeight);
             }
         });
+    }
+
+    public ArrayList<String> ChooseRollDialog(){
+
+        //TODO: replace with reading rolls from json file
+        final CharSequence[] items = {"Roll1","Roll2","Roll3","Roll4"};
+        final ArrayList selectedItems = new ArrayList();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Rolls");
+
+        builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if (isChecked) {
+                    selectedItems.add(which);
+                } else if (selectedItems.contains(which)) {
+                    selectedItems.remove(Integer.valueOf(which));
+                }
+            }
+        });
+
+        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selectedItems.clear();
+                selectedItems.add("Cancel");
+                dialog.dismiss();
+            }
+        });
+
+        //builder.create();
+        builder.show();
+
+        return selectedItems;
     }
 
     public void deleteDialog() {

@@ -26,40 +26,45 @@ public class Database extends AppCompatActivity {
 
     private final String TAG = "HoloNAV Database Class TAG ";
 
-    private static String substation_Json_Path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "substations.json";
-
     ObjectMapper objectMapper = new ObjectMapper();
-    File subsJsonFile = new File(substation_Json_Path);
-
-    Map<String, Substation> substationMap = new HashMap<>();;
-    TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
-
-    static private ArrayList<Substation> subs = new ArrayList<>();
-    static private SubstationsAdapter adapter;
-
-    private static int pos;
-    private static String path;
 
     public Database() { }
 
-    public boolean isNameExists(String name) {
+    //////////////////
+    //  General     //
+    //////////////////
 
-        try {
-            if(subsJsonFile.exists()){
-                substationMap = objectMapper.readValue(subsJsonFile, typeRef);
-
-                if(substationMap.containsKey(name)){
-
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            Log.d(TAG, "problem with checking if substation name already exists: " + e.getMessage());
-        }
-
-        return false;
+    static public String getPath(){
+        return path;
     }
 
+    static public String getSubstationJsonPath(){
+        return substation_Json_Path;
+    }
+
+    private static void sortList(){
+        Collections.sort(subs, new Comparator<Substation>() {
+            @Override
+            public int compare(Substation lhs, Substation rhs) {
+                return lhs.getName().compareTo(rhs.getName());
+            }
+        });
+    }
+
+    //////////////////////
+    //  Substations     //
+    //////////////////////
+
+    private static String substation_Json_Path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "substations.json";
+    File subsJsonFile = new File(substation_Json_Path);
+    Map<String, Substation> substationMap = new HashMap<>();;
+    TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
+    static private ArrayList<Substation> subs = new ArrayList<>();
+    static private SubstationsAdapter adapter;
+    private static int pos;
+    private static String path;
+
+    //ADD
     public void addSubstationToDatabase(Substation new_sub){
 
         File subsJsonFile = new File(substation_Json_Path);
@@ -81,7 +86,7 @@ public class Database extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Map<String, Substation> substationMap = new HashMap<>();
+        //Map<String, Substation> substationMap = new HashMap<>();
         TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
 
         try {
@@ -99,14 +104,7 @@ public class Database extends AppCompatActivity {
         }
     }
 
-    boolean nameIsValid(String name){
-        return !name.equals("");
-    }
-
-    boolean pathIsValid(String path){
-        return !path.equals("");
-    }
-
+    //EDIT
     public void editSubstationInDatabase(Substation edited_substation, String old_name, File old_riskArea_file){
 
         try {
@@ -123,6 +121,7 @@ public class Database extends AppCompatActivity {
         }
     }
 
+    //REMOVE
     public void removeSubstationFromDatabase(String old_name, File old_riskArea_file) {
 
         try {
@@ -143,6 +142,26 @@ public class Database extends AppCompatActivity {
         }
     }
 
+    //CHECKS_IF_EXISTS
+    public boolean isNameExists(String name) {
+
+        try {
+            if(subsJsonFile.exists()){
+                substationMap = objectMapper.readValue(subsJsonFile, typeRef);
+
+                if(substationMap.containsKey(name)){
+
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "problem with checking if substation name already exists: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //SET_RECYCLER
     public void setUpSubstationsRecyclerView(final Context context, RecyclerView recyclerView){
 
         sortList();
@@ -173,7 +192,7 @@ public class Database extends AppCompatActivity {
             @Override
             public void onButtonClick(View itemView, int position) {
                 pos = position;
-                Intent intent = new Intent(itemView.getContext(), Edit.class);
+                Intent intent = new Intent(itemView.getContext(), EditSubstation.class);
                 itemView.getContext().startActivity(intent);
             }
 
@@ -184,15 +203,7 @@ public class Database extends AppCompatActivity {
 
     }
 
-    private static void sortList(){
-        Collections.sort(subs, new Comparator<Substation>() {
-            @Override
-            public int compare(Substation lhs, Substation rhs) {
-                return lhs.getName().compareTo(rhs.getName());
-            }
-        });
-    }
-
+    //UPDATE_RECYCLER
     public void updateSubstationsRecyclerView(){
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -215,7 +226,15 @@ public class Database extends AppCompatActivity {
                 subs.clear();
 
                 for (Map.Entry<String,Substation> entry : substationMap.entrySet()){
-                    addToSubs(entry.getKey(), entry.getValue().getPath(), entry.getValue().getX_offset(), entry.getValue().getY_offset(), entry.getValue().getZ_offset(), entry.getValue().getX_rotate(), entry.getValue().getY_rotate(), entry.getValue().getZ_rotate());
+
+                    addToSubs(entry.getKey(),
+                              entry.getValue().getPath(),
+                              entry.getValue().getX_offset(),
+                              entry.getValue().getY_offset(),
+                              entry.getValue().getZ_offset(),
+                              entry.getValue().getX_rotate(),
+                              entry.getValue().getY_rotate(),
+                              entry.getValue().getZ_rotate());
                 }
 
             } else{
@@ -235,12 +254,35 @@ public class Database extends AppCompatActivity {
         }
     }
 
+                ///////////////////////////
+                //  Subs Validations     //
+                ///////////////////////////
+
+                boolean nameIsValid(String name){
+                    return !name.equals("");
+                }
+
+                boolean pathIsValid(String path){
+                    return !path.equals("");
+                }
+
+    ////////////////
+    //  Subs     //
+    ////////////////
+
+    //ADD
     public static void addToSubs(String name, String path, String xo, String yo, String zo, String xr, String yr, String zr){
         subs.add(new Substation(name, path, xo, yo, zo, xr, yr, zr));
         sortList();
         adapter.notifyDataSetChanged();
     }
 
+    //GET
+    public static Substation getFromSubs(){
+        return subs.get(pos);
+    }
+
+    //REMOVE
     public static void removeFromSubs(){
         subs.remove(pos);
         sortList();
@@ -248,15 +290,89 @@ public class Database extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    public static Substation getFromSubs(){
-        return subs.get(pos);
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////
+    //  Rolls     //
+    ////////////////
+
+    private static String rolls_Json_Path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "rolls.json";
+    File rollsJsonFile = new File(rolls_Json_Path);
+    Map<String, Roll> rollsMap = new HashMap<>();;
+    TypeReference<HashMap<String, Roll>> rollTypeRef = new TypeReference<HashMap<String, Roll>>() {};
+    static private ArrayList<Roll> rolls = new ArrayList<>();
+    //static private SubstationsAdapter adapter;
+    //private static int pos;
+
+    //CHECKS_IF_EXISTS
+    public boolean isRollExists(String name) {
+
+//        try {
+//            if(subsJsonFile.exists()){
+//                substationMap = objectMapper.readValue(subsJsonFile, typeRef);
+//
+//                if(substationMap.containsKey(name)){
+//
+//                    return true;
+//                }
+//            }
+//        } catch (IOException e) {
+//            Log.d(TAG, "problem with checking if substation name already exists: " + e.getMessage());
+//        }
+//
+        return false;
     }
 
-    static public String getPath(){
-        return path;
+    //ADD
+    public void addRollToDatabase(String roll){
+
+//        File subsJsonFile = new File(substation_Json_Path);
+//
+//        String riskAreaJsonPath = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + new_sub.getName() + ".json";
+//        File riskAreaJsonFile = new File(riskAreaJsonPath);
+//
+//        Log.d(TAG, "path 1 : " + substation_Json_Path);
+//        Log.d(TAG, "path 2 : " + riskAreaJsonPath);
+//
+//        // writing to a json file
+//        Substation addedSubstation = new Substation(new_sub.getName(), new_sub.getPath(), new_sub.getX_offset(), new_sub.getY_offset(), new_sub.getZ_offset(), new_sub.getX_rotate(), new_sub.getY_rotate(), new_sub.getZ_rotate());
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        //creating a JSON file for the new added substation
+//        try {
+//            riskAreaJsonFile.createNewFile();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        //Map<String, Substation> substationMap = new HashMap<>();
+//        TypeReference<HashMap<String, Substation>> typeRef = new TypeReference<HashMap<String, Substation>>() {};
+//
+//        try {
+//            if(subsJsonFile.exists()){
+//                substationMap = objectMapper.readValue(subsJsonFile, typeRef);
+//                if(substationMap.containsKey(addedSubstation.getName())){
+//                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_substation_named)+ " " + addedSubstation.getName() + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//            }
+//            substationMap.put(addedSubstation.getName(), addedSubstation);
+//            objectMapper.writeValue(new File(substation_Json_Path), substationMap);
+//        } catch (IOException e) {
+//            Log.d(TAG, "could not append json file because: " + e.getMessage());
+//        }
     }
 
-    static public String getSubstationJsonPath(){
-        return substation_Json_Path;
-    }
+                ////////////////////////////
+                //  Rolls Validations     //
+                ////////////////////////////
+
+                boolean rollIsValid(String name){
+                    return !name.equals("");
+                }
+
+
+
+
+
 }

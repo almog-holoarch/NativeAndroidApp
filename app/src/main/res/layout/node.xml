@@ -28,6 +28,6 @@
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:text="@string/TITLE_editTitle" />
+            android:text="@string/TITLE_edit_sub" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

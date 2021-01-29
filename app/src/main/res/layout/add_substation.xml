@@ -144,7 +144,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_add_accept"
+        android:id="@+id/btn_add_sub"
         android:layout_marginTop="100dp"
         android:layout_gravity="center"
         android:layout_width="100dp"

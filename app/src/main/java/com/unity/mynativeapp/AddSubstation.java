@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class Add extends AppCompatActivity {
+public class AddSubstation extends AppCompatActivity {
 
     private final String TAG = "HoloNAV ADD Class TAG ";
 
@@ -20,13 +20,13 @@ public class Add extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.add);
+        setContentView(R.layout.add_substation);
 
         db = new Database();
 
         toolbar = findViewById(R.id.add_toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
-        toolbar.setTitle(R.string.TITLE_addTitle);
+        toolbar.setTitle(R.string.TITLE_add_sub);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +45,7 @@ public class Add extends AppCompatActivity {
             }
         });
 
-        Button accept = findViewById(R.id.btn_add_accept);
+        Button accept = findViewById(R.id.btn_add_sub);
         accept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
