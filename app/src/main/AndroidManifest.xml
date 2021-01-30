@@ -15,7 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddRoll"
+        <activity
+            android:name=".EditRoll"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".AddRoll"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RollsActivity"

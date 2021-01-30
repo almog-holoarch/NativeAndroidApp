@@ -40,9 +40,11 @@
     <string name="TOAST_roll_named">Roll named</string>
     <string name="TOAST_already_exists">already exists</string>
     <string name="TOAST_cant_add_cube_in_3D">Cannot add risk area in 3D</string>
+    <string name="TOAST_cant_add_cube_cause_no_rolls">First, ADD ROLLS in main screen so you can attach later to the new risk area</string>
 
     <!-- Android Buttons -->
     <string name="BUTTON_upload">Upload</string>
+    <string name="BUTTON_edit">Edit</string>
     <string name="BUTTON_remove">Remove</string>
     <string name="BUTTON_save">Save</string>
     <string name="BUTTON_add">Add</string>

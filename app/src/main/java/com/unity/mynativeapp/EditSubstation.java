@@ -18,7 +18,7 @@ import static com.unity.mynativeapp.Database.getFromSubs;
 
 public class EditSubstation extends AppCompatActivity {
 
-    private static String TAG = "HoloNAV EDIT Class TAG ";
+    private static String TAG = "HoloNAV EDIT_SUB Class TAG ";
 
     private Database db;
     private Toolbar toolbar;

@@ -342,12 +342,12 @@ public class Database extends AppCompatActivity {
         File rollsJsonFile = new File(rolls_Json_Path);
 
         // writing to a json file
-        Roll roll = given_roll;
+        Roll roll = new Roll(given_roll.getName());
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             if(rollsJsonFile.exists()){
-                rollsMap = objectMapper.readValue(rolls_Json_Path, rollTypeRef);
+                rollsMap = objectMapper.readValue(rollsJsonFile, rollTypeRef);
                 if(rollsMap.containsKey(roll.getName())){
                     Toast.makeText(getApplicationContext(),getString(R.string.TOAST_roll_named)+ " " + roll.getName() + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                     return;
@@ -360,13 +360,48 @@ public class Database extends AppCompatActivity {
         }
     }
 
+    //EDIT
+    public void editRollInDatabase(Roll edited_roll, String old_name){
+
+        try {
+            rollsMap.remove(old_name);
+            rollsMap.put(edited_roll.getName(), edited_roll);
+            objectMapper.writeValue(new File(rolls_Json_Path), rollsMap);
+
+        } catch (IOException e) {
+            Log.d(TAG, "could not append json file while editing a roll because: " + e.getMessage());
+        }
+    }
+
+    //REMOVE
+    public void removeRollFromDatabase(String old_name) {
+
+        try {
+
+            if(rollsJsonFile.exists()){
+                rollsMap = objectMapper.readValue(rollsJsonFile, rollTypeRef);
+            }
+
+            rollsMap.remove(old_name);
+            objectMapper.writeValue(new File(rolls_Json_Path), rollsMap);
+
+            rolls_adapter.notifyItemRemoved(rolls_pos);
+            rolls_adapter.notifyDataSetChanged();
+
+            //TODO: implement a deletion of deleted roll from ALL risk area files (each file with a sub name)
+
+        } catch (IOException e) {
+            Log.d(TAG, "could not append json file while deleting a roll because: " + e.getMessage());
+        }
+    }
+
     //SET_RECYCLER
     public void setUpRollsRecyclerView(final Context context, RecyclerView recyclerView){
 
         sortRollsList();
         rolls_adapter = new RollsAdapter(rolls);
-//        adapter.setOnItemClickListener(new SubstationsAdapter.OnItemClickListener() {
-//
+        rolls_adapter.setOnItemClickListener(new RollsAdapter.OnItemClickListener() {
+
 //            //Click a substation from substations list
 //            @Override
 //            public void onItemClick(View itemView, int position) {
@@ -387,15 +422,15 @@ public class Database extends AppCompatActivity {
 //                }
 //            }
 
-//            // click edit button on a substation
-//            @Override
-//            public void onButtonClick(View itemView, int position) {
-//                pos = position;
-//                Intent intent = new Intent(itemView.getContext(), EditSubstation.class);
-//                itemView.getContext().startActivity(intent);
-//            }
+            // click edit button on a roll
+            @Override
+            public void onButtonClick(View itemView, int position) {
+                rolls_pos = position;
+                Intent intent = new Intent(itemView.getContext(), EditRoll.class);
+                itemView.getContext().startActivity(intent);
+            }
 
-//        });
+        });
 
         recyclerView.setAdapter(rolls_adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -478,6 +513,15 @@ public class Database extends AppCompatActivity {
                     rolls_adapter.notifyDataSetChanged();
                 }
 
+                public Map<String,Roll> getRollsMap(){
+                    try {
+                        if(rollsJsonFile.exists()){
+                            return objectMapper.readValue(rollsJsonFile, rollTypeRef);
+                        }
+                    } catch (IOException e) {
+                        Log.d(TAG, "could not append rolls json file because: " + e.getMessage());
+                    }
 
-
+                    return null;
+                }
 }

@@ -35,13 +35,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MainUnityActivity extends OverrideUnityActivity {
 
     private final String TAG = "AlmogMainUnityActivity";
     static private String riskAreaJsonPath;
+    private Database db;
 
     //////////////////////////
     //      SETTINGS        //
@@ -116,9 +119,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ////////////////////////////////////// START
-
-        ///////////////////////////////////// END
+        db = new Database();
 
         String cmdLine = updateUnityCommandLineArguments(getIntent().getStringExtra("unity"));
         getIntent().putExtra("unity", cmdLine);
@@ -600,53 +601,60 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_addRiskArea.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
 
-                        //START
-                        final CharSequence[] items = {"Roll1","Roll2","Roll3","Roll4","Roll5","Roll6","Roll7","Roll8","Roll9","Roll10","Roll11","Roll12","Roll13","Roll14","Roll15","Roll16"};
+                        Map<String, Roll> rollsMap = new HashMap<>();
+                        rollsMap = db.getRollsMap();
 
-                        final ArrayList selectedItems = new ArrayList();
+                        if(rollsMap.size() == 0){
+                            Toast.makeText(getApplicationContext(), getString(R.string.TOAST_cant_add_cube_cause_no_rolls), Toast.LENGTH_LONG).show();
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainUnityActivity.this);
-                        builder.setTitle("Please choose rolls for this risk area");
+                        } else{
 
-                        builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                if (isChecked) {
-                                    selectedItems.add(which);
-                                } else if (selectedItems.contains(which)) {
-                                    selectedItems.remove(Integer.valueOf(which));
-                                }
-                            }
-                        });
+                            Set<String> keys = rollsMap.keySet();
+                            final String[] items = keys.toArray(new String[keys.size()]);
+                            Arrays.sort(items);
 
-                        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                StringBuilder arg = new StringBuilder();
-                                int i = 0;
-                                for (Object index : selectedItems)
-                                {
-                                    i++;
-                                    arg.append(items[(int)index]);
-                                    if(i < selectedItems.size()){
-                                        arg.append(",");
+                            final ArrayList selectedItems = new ArrayList();
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainUnityActivity.this);
+                            builder.setTitle("Please choose rolls for this risk area");
+
+                            builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                    if (isChecked) {
+                                        selectedItems.add(which);
+                                    } else if (selectedItems.contains(which)) {
+                                        selectedItems.remove(Integer.valueOf(which));
                                     }
                                 }
-                                UnitySendMessage("Main Camera", "addCube", arg.toString());
-                            }
-                        });
+                            });
 
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+                            builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    StringBuilder arg = new StringBuilder();
+                                    int i = 0;
+                                    for (Object index : selectedItems)
+                                    {
+                                        i++;
+                                        arg.append(items[(int)index]);
+                                        if(i < selectedItems.size()){
+                                            arg.append(",");
+                                        }
+                                    }
+                                    UnitySendMessage("Main Camera", "addCube", arg.toString());
+                                }
+                            });
 
-                        //builder.create();
-                        builder.show();
-                        //END
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
 
+                            builder.show();
+                        }
 
                     }
                 });
