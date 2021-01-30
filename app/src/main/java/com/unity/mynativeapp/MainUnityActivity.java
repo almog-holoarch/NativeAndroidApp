@@ -604,7 +604,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                         Map<String, Roll> rollsMap = new HashMap<>();
                         rollsMap = db.getRollsMap();
 
-                        if(rollsMap.size() == 0){
+                        if(rollsMap==null || rollsMap.size() == 0){
                             Toast.makeText(getApplicationContext(), getString(R.string.TOAST_cant_add_cube_cause_no_rolls), Toast.LENGTH_LONG).show();
 
                         } else{
