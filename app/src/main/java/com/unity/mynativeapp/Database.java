@@ -295,24 +295,24 @@ public class Database extends AppCompatActivity {
     //  Rolls     //
     ////////////////
 
-    private static String rolls_Json_Path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "rolls.json";
-    File rollsJsonFile = new File(rolls_Json_Path);
-    Map<String, Roll> rollsMap = new HashMap<>();;
-    TypeReference<HashMap<String, Roll>> rollTypeRef = new TypeReference<HashMap<String, Roll>>() {};
-    static private ArrayList<Roll> rolls = new ArrayList<>();
-    static private RollsAdapter rolls_adapter;
-    private static int rolls_pos;
+    private static String group_json_path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "groups.json";
+    File groupsJsonFile = new File(group_json_path);
+    Map<String, Group> groupsMap = new HashMap<>();;
+    TypeReference<HashMap<String, Group>> groupTypeRef = new TypeReference<HashMap<String, Group>>() {};
+    static private ArrayList<Group> groups = new ArrayList<>();
+    static private GroupsAdapter groups_adapter;
+    private static int groups_pos;
 
     //GET_ROLLS_JSON_PATH
     static public String getRollsJsonPath(){
-        return rolls_Json_Path;
+        return group_json_path;
     }
 
     //SORT_ROLLS_LIST
-    private static void sortRollsList(){
-        Collections.sort(rolls, new Comparator<Roll>() {
+    private static void sortGroupsList(){
+        Collections.sort(groups, new Comparator<Group>() {
             @Override
-            public int compare(Roll lhs, Roll rhs) {
+            public int compare(Group lhs, Group rhs) {
                 return lhs.getName().compareTo(rhs.getName());
             }
         });
@@ -322,54 +322,54 @@ public class Database extends AppCompatActivity {
     public boolean isRollExists(String name) {
 
         try {
-            if(rollsJsonFile.exists()){
-                rollsMap = objectMapper.readValue(rollsJsonFile, rollTypeRef);
+            if(groupsJsonFile.exists()){
+                groupsMap = objectMapper.readValue(groupsJsonFile, groupTypeRef);
 
-                if(rollsMap.containsKey(name)){
+                if(groupsMap.containsKey(name)){
                     return true;
                 }
             }
         } catch (IOException e) {
-            Log.d(TAG, "problem with checking if roll's name already exists: " + e.getMessage());
+            Log.d(TAG, "problem with checking if groups's name already exists: " + e.getMessage());
         }
 
         return false;
     }
 
     //ADD
-    public void addRollToDatabase(Roll given_roll){
+    public void addRollToDatabase(Group given_group){
 
-        File rollsJsonFile = new File(rolls_Json_Path);
+        File groupsJsonFile = new File(group_json_path);
 
         // writing to a json file
-        Roll roll = new Roll(given_roll.getName());
+        Group group = new Group(given_group.getName());
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            if(rollsJsonFile.exists()){
-                rollsMap = objectMapper.readValue(rollsJsonFile, rollTypeRef);
-                if(rollsMap.containsKey(roll.getName())){
-                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_roll_named)+ " " + roll.getName() + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
+            if(groupsJsonFile.exists()){
+                groupsMap = objectMapper.readValue(groupsJsonFile, groupTypeRef);
+                if(groupsMap.containsKey(group.getName())){
+                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_group_named)+ " " + group.getName() + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
-            rollsMap.put(roll.getName(), roll);
-            objectMapper.writeValue(new File(rolls_Json_Path), rollsMap);
+            groupsMap.put(group.getName(), group);
+            objectMapper.writeValue(new File(group_json_path), groupsMap);
         } catch (IOException e) {
-            Log.d(TAG, "could not append rolls json file because: " + e.getMessage());
+            Log.d(TAG, "could not append groups json file because: " + e.getMessage());
         }
     }
 
     //EDIT
-    public void editRollInDatabase(Roll edited_roll, String old_name){
+    public void editGroupInDatabase(Group edited_group, String old_name){
 
         try {
-            rollsMap.remove(old_name);
-            rollsMap.put(edited_roll.getName(), edited_roll);
-            objectMapper.writeValue(new File(rolls_Json_Path), rollsMap);
+            groupsMap.remove(old_name);
+            groupsMap.put(edited_group.getName(), edited_group);
+            objectMapper.writeValue(new File(group_json_path), groupsMap);
 
         } catch (IOException e) {
-            Log.d(TAG, "could not append json file while editing a roll because: " + e.getMessage());
+            Log.d(TAG, "could not append json file while editing a group because: " + e.getMessage());
         }
     }
 
@@ -378,29 +378,29 @@ public class Database extends AppCompatActivity {
 
         try {
 
-            if(rollsJsonFile.exists()){
-                rollsMap = objectMapper.readValue(rollsJsonFile, rollTypeRef);
+            if(groupsJsonFile.exists()){
+                groupsMap = objectMapper.readValue(groupsJsonFile, groupTypeRef);
             }
 
-            rollsMap.remove(old_name);
-            objectMapper.writeValue(new File(rolls_Json_Path), rollsMap);
+            groupsMap.remove(old_name);
+            objectMapper.writeValue(new File(group_json_path), groupsMap);
 
-            rolls_adapter.notifyItemRemoved(rolls_pos);
-            rolls_adapter.notifyDataSetChanged();
+            groups_adapter.notifyItemRemoved(groups_pos);
+            groups_adapter.notifyDataSetChanged();
 
-            //TODO: implement a deletion of deleted roll from ALL risk area files (each file with a sub name)
+            //TODO: implement a deletion of deleted group from ALL risk area files (each file with a sub name)
 
         } catch (IOException e) {
-            Log.d(TAG, "could not append json file while deleting a roll because: " + e.getMessage());
+            Log.d(TAG, "could not append json file while deleting a group because: " + e.getMessage());
         }
     }
 
     //SET_RECYCLER
     public void setUpRollsRecyclerView(final Context context, RecyclerView recyclerView){
 
-        sortRollsList();
-        rolls_adapter = new RollsAdapter(rolls);
-        rolls_adapter.setOnItemClickListener(new RollsAdapter.OnItemClickListener() {
+        sortGroupsList();
+        groups_adapter = new GroupsAdapter(groups);
+        groups_adapter.setOnItemClickListener(new GroupsAdapter.OnItemClickListener() {
 
 //            //Click a substation from substations list
 //            @Override
@@ -422,17 +422,17 @@ public class Database extends AppCompatActivity {
 //                }
 //            }
 
-            // click edit button on a roll
+            // click edit button on a group
             @Override
             public void onButtonClick(View itemView, int position) {
-                rolls_pos = position;
-                Intent intent = new Intent(itemView.getContext(), EditRoll.class);
+                groups_pos = position;
+                Intent intent = new Intent(itemView.getContext(), EditGroup.class);
                 itemView.getContext().startActivity(intent);
             }
 
         });
 
-        recyclerView.setAdapter(rolls_adapter);
+        recyclerView.setAdapter(groups_adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
     }
@@ -442,42 +442,42 @@ public class Database extends AppCompatActivity {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
-        File json = new File(rolls_Json_Path);
+        File json = new File(group_json_path);
 
         if(json != null){
-            Map<String, Roll> rollsMap = new HashMap<>();
+            Map<String, Group> groupsMap = new HashMap<>();
 
             try {
 
-                TypeReference<HashMap<String, Roll>> rollTypeRef = new TypeReference<HashMap<String, Roll>>() {};
-                rollsMap = objectMapper.readValue(json, rollTypeRef);
+                TypeReference<HashMap<String, Group>> groupTypeRef = new TypeReference<HashMap<String, Group>>() {};
+                groupsMap = objectMapper.readValue(json, groupTypeRef);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            if(rollsMap.size() >= 0){
-                rolls.clear();
+            if(groupsMap.size() >= 0){
+                groups.clear();
 
-                for (Map.Entry<String,Roll> entry : rollsMap.entrySet()){
+                for (Map.Entry<String, Group> entry : groupsMap.entrySet()){
 
-                    addToRolls(entry.getKey());
+                    addToGroups(entry.getKey());
                 }
 
             } else{
-                Log.d(TAG,"rolls Json file is empty");
+                Log.d(TAG,"groups Json file is empty");
             }
 
         } else{
-            Log.d(TAG,"Cannot find rolls json file");
-            removeFromRolls();
+            Log.d(TAG,"Cannot find groups json file");
+            removeFromGroups();
         }
 
-        if(rolls.size() > 0)
+        if(groups.size() > 0)
         {
-            RollsActivity.hideEmptyListText();
+            GroupsActivity.hideEmptyListText();
         } else {
-            RollsActivity.displayEmptyListText();
+            GroupsActivity.displayEmptyListText();
         }
     }
 
@@ -485,7 +485,7 @@ public class Database extends AppCompatActivity {
                 //  Rolls Validations     //
                 ////////////////////////////
 
-                boolean rollIsValid(String name){
+                boolean groupIsValid(String name){
                     return !name.equals("");
                 }
 
@@ -494,32 +494,32 @@ public class Database extends AppCompatActivity {
                 /////////////////////
 
                 //ADD
-                public static void addToRolls(String name){
-                    rolls.add(new Roll(name));
-                    sortRollsList();
-                    rolls_adapter.notifyDataSetChanged();
+                public static void addToGroups(String name){
+                    groups.add(new Group(name));
+                    sortGroupsList();
+                    groups_adapter.notifyDataSetChanged();
                 }
 
                 //GET
-                public static Roll getFromRolls(){
-                    return rolls.get(rolls_pos);
+                public static Group getFromGroups(){
+                    return groups.get(groups_pos);
                 }
 
                 //REMOVE
-                public static void removeFromRolls(){
-                    rolls.remove(rolls_pos);
-                    sortRollsList();
-                    rolls_adapter.notifyItemRemoved(rolls_pos);
-                    rolls_adapter.notifyDataSetChanged();
+                public static void removeFromGroups(){
+                    groups.remove(groups_pos);
+                    sortGroupsList();
+                    groups_adapter.notifyItemRemoved(groups_pos);
+                    groups_adapter.notifyDataSetChanged();
                 }
 
-                public Map<String,Roll> getRollsMap(){
+                public Map<String, Group> getGroupsMap(){
                     try {
-                        if(rollsJsonFile.exists()){
-                            return objectMapper.readValue(rollsJsonFile, rollTypeRef);
+                        if(groupsJsonFile.exists()){
+                            return objectMapper.readValue(groupsJsonFile, groupTypeRef);
                         }
                     } catch (IOException e) {
-                        Log.d(TAG, "could not append rolls json file because: " + e.getMessage());
+                        Log.d(TAG, "could not append groups json file because: " + e.getMessage());
                     }
 
                     return null;

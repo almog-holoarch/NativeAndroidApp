@@ -16,13 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".EditRoll"
+            android:name=".EditGroup"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".AddRoll"
+            android:name=".AddGroup"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".RollsActivity"
+            android:name=".GroupsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"

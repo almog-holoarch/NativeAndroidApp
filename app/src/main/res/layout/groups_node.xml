@@ -15,7 +15,7 @@
 >
 
         <TextView
-            android:id="@+id/rollsNodeText"
+            android:id="@+id/groupsNodeText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -23,7 +23,7 @@
             android:paddingLeft="10dp"/>
 
         <Button
-            android:id="@+id/rollsNodeButton"
+            android:id="@+id/groupsNodeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"

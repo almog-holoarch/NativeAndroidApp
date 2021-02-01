@@ -11,10 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import static com.unity.mynativeapp.Database.getFromRolls;
-import static com.unity.mynativeapp.Database.getFromSubs;
+import static com.unity.mynativeapp.Database.getFromGroups;
 
-public class EditRoll extends AppCompatActivity {
+public class EditGroup extends AppCompatActivity {
 
     private final String TAG = "HoloNAV EDIT Roll Class TAG ";
     private Database db;
@@ -22,13 +21,13 @@ public class EditRoll extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_roll);
+        setContentView(R.layout.activity_edit_group);
 
         db = new Database();
 
-        Toolbar toolbar = findViewById(R.id.rolls_toolbar);
+        Toolbar toolbar = findViewById(R.id.groups_toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
-        toolbar.setTitle(R.string.TITLE_edit_roll);
+        toolbar.setTitle(R.string.TITLE_edit_group);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,30 +36,30 @@ public class EditRoll extends AppCompatActivity {
             }
         });
 
-        final EditText nameEditText = findViewById(R.id.txt_edit_roll_name);
-        nameEditText.setText(getFromRolls().getName());
+        final EditText nameEditText = findViewById(R.id.txt_edit_group_name);
+        nameEditText.setText(getFromGroups().getName());
         final String old_name = nameEditText.getText().toString();
 
-        Button save = findViewById(R.id.btn_edit_roll_save);
+        Button save = findViewById(R.id.btn_edit_group_save);
         save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                String new_name = ((EditText)findViewById(R.id.txt_edit_roll_name)).getText().toString();
-                Roll edited_roll = new Roll(new_name);
+                String new_name = ((EditText)findViewById(R.id.txt_edit_group_name)).getText().toString();
+                Group edited_group = new Group(new_name);
 
                 if(!old_name.equals(new_name)){
 
                     if(!old_name.equals(new_name) && db.isRollExists(new_name)){
-                        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_roll_named)+ " " + new_name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_group_named)+ " " + new_name + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                         nameEditText.setText("");
                     }
 
-                    else if(!db.rollIsValid(new_name)){
-                        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_roll),Toast.LENGTH_SHORT).show();
+                    else if(!db.groupIsValid(new_name)){
+                        Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_group),Toast.LENGTH_SHORT).show();
                     }
 
                     else{
-                        db.editRollInDatabase(edited_roll, old_name);
+                        db.editGroupInDatabase(edited_group, old_name);
                         finish();
                     }
                 }
@@ -71,7 +70,7 @@ public class EditRoll extends AppCompatActivity {
             }
         });
 
-        final Button delete = findViewById(R.id.btn_edit_roll_delete);
+        final Button delete = findViewById(R.id.btn_edit_group_delete);
         delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 

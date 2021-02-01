@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent;
         switch (item.getItemId()) {
 
-            case R.id.action_manage_rolls:
-                intent = new Intent(MainActivity.this, RollsActivity.class);
+            case R.id.action_manage_groups:
+                intent = new Intent(MainActivity.this, GroupsActivity.class);
                 startActivity(intent);
                 return true;
 

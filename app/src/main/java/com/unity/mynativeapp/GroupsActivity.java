@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class RollsActivity extends AppCompatActivity {
+public class GroupsActivity extends AppCompatActivity {
 
     private final String TAG = "HoloNAV Rolls Class TAG ";
     private Database db;
@@ -21,13 +21,13 @@ public class RollsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rolls);
+        setContentView(R.layout.activity_groups);
 
         db = new Database();
 
-        Toolbar toolbar = findViewById(R.id.rolls_toolbar);
+        Toolbar toolbar = findViewById(R.id.groups_toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
-        toolbar.setTitle(R.string.TITLE_rollsManage);
+        toolbar.setTitle(R.string.TITLE_groupsManage);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,18 +36,18 @@ public class RollsActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView recyclerView = findViewById(R.id.rollsList);
+        RecyclerView recyclerView = findViewById(R.id.groupsList);
         db.setUpRollsRecyclerView(this.getApplicationContext(), recyclerView);
 
-        FloatingActionButton add = findViewById(R.id.rollsFloatingActionButton);
+        FloatingActionButton add = findViewById(R.id.groupsFloatingActionButton);
         add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(RollsActivity.this, AddRoll.class);
+                Intent intent = new Intent(GroupsActivity.this, AddGroup.class);
                 startActivity(intent);
             }
         });
 
-        text_empty = findViewById(R.id.emptyRollsListTextView);
+        text_empty = findViewById(R.id.emptyGroupsListTextView);
     }
 
     @Override

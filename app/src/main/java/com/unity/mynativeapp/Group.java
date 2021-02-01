@@ -1,12 +1,12 @@
 package com.unity.mynativeapp;
 
-public class Roll {
+public class Group {
 
     private String name;
 
-    public Roll(){ }
+    public Group(){ }
 
-    public Roll(String n){
+    public Group(String n){
         name = n;
     }
 

@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class AddRoll extends AppCompatActivity {
+public class AddGroup extends AppCompatActivity {
 
     private final String TAG = "HoloNAV ADD Roll Class TAG ";
     private Database db;
@@ -21,9 +21,9 @@ public class AddRoll extends AppCompatActivity {
 
         db = new Database();
 
-        Toolbar toolbar = findViewById(R.id.rolls_toolbar);
+        Toolbar toolbar = findViewById(R.id.groups_toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
-        toolbar.setTitle(R.string.TITLE_add_roll);
+        toolbar.setTitle(R.string.TITLE_add_group);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,18 +36,18 @@ public class AddRoll extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                Roll roll = new Roll(((EditText)findViewById(R.id.txt_add_roll_name)).getText().toString());
+                Group group = new Group(((EditText)findViewById(R.id.txt_add_roll_name)).getText().toString());
 
-                if (db.isRollExists(roll.getName())){
-                    Toast.makeText(getApplicationContext(), getString(R.string.TOAST_roll_named) + " " + roll + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
+                if (db.isRollExists(group.getName())){
+                    Toast.makeText(getApplicationContext(), getString(R.string.TOAST_group_named) + " " + group + " " + getString(R.string.TOAST_already_exists),Toast.LENGTH_SHORT).show();
                 }
 
-                else if(!db.rollIsValid(roll.getName())){
-                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_roll),Toast.LENGTH_SHORT).show();
+                else if(!db.groupIsValid(group.getName())){
+                    Toast.makeText(getApplicationContext(),getString(R.string.TOAST_choose_group),Toast.LENGTH_SHORT).show();
                 }
 
                 else {
-                    db.addRollToDatabase(roll);
+                    db.addRollToDatabase(group);
                     finish();
                 }
             }

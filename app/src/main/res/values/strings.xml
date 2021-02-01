@@ -2,7 +2,7 @@
 
     <string name="APP_NAME">Holonav</string>
 
-    <string name="ACTION_manage_rolls">Manage Rolls</string>
+    <string name="ACTION_manage_groups">Manage Groups</string>
     <string name="ACTION_contact_us">Contact Us</string>
 
     <!-- Unity -->
@@ -14,14 +14,14 @@
     <string name="TITLE_previous">Previous</string>
     <string name="TITLE_add_sub">Add Sub</string>
     <string name="TITLE_edit_sub">Edit Sub</string>
-    <string name="TITLE_add_roll">Add Roll</string>
-    <string name="TITLE_edit_roll">Edit Roll</string>
-    <string name="TITLE_rollsManage">Manage Rolls</string>
+    <string name="TITLE_add_group">Add Group</string>
+    <string name="TITLE_edit_group">Edit Group</string>
+    <string name="TITLE_groupsManage">Manage Groups</string>
     <string name="TITLE_version">Version 1.1.5</string>
 
     <!-- Message -->
     <string name="MESSAGE_subs_empty_list">No substations to display</string>
-    <string name="MESSAGE_rolls_empty_list">No rolls to display</string>
+    <string name="MESSAGE_groups_empty_list">No groups to display</string>
     <string name="MESSAGE_save_changes">Do you want to save changes ?</string>
     <string name="MESSAGE_are_you_sure">Are you sure ?</string>
     <string name="MESSAGE_riskArea_delete">Risk area will be deleted permanently</string>
@@ -35,15 +35,18 @@
     <string name="TOAST_support_las">Supports only .las file</string>
     <string name="TOAST_upload_las">Upload A substation .las file</string>
     <string name="TOAST_choose_name">Choose A substation name</string>
-    <string name="TOAST_choose_roll">Choose name for new roll</string>
+    <string name="TOAST_choose_group">Choose name for new group</string>
     <string name="TOAST_substation_named">Substation named</string>
-    <string name="TOAST_roll_named">Roll named</string>
+    <string name="TOAST_group_named">Roll named</string>
     <string name="TOAST_already_exists">already exists</string>
     <string name="TOAST_cant_add_cube_in_3D">Cannot add risk area in 3D</string>
-    <string name="TOAST_cant_add_cube_cause_no_rolls">First, ADD ROLLS in main screen so you can attach later to the new risk area</string>
+    <string name="TOAST_cant_add_cube_cause_no_groups">First, ADD ROLLS in main screen so you can attach later to the new risk area</string>
+    <string name="TOAST_no_risk_area_to_export">There are no risk areas to export</string>
+    <string name="TOAST_exporting_risk_areas_to_device">Exporting risk areas to device #</string>
 
     <!-- Android Buttons -->
     <string name="BUTTON_upload">Upload</string>
+    <string name="BUTTON_done">Done</string>
     <string name="BUTTON_edit">Edit</string>
     <string name="BUTTON_remove">Remove</string>
     <string name="BUTTON_save">Save</string>
@@ -71,4 +74,6 @@
     <string name="HINT_sub_name">Name</string>
     <string name="HINT_sub_path">3D Model Path</string>
 
+    <!-- other -->
+    <string name="OTHER_lost_signal">Lost signal</string>
 </resources>

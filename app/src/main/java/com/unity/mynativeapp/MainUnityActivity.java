@@ -601,22 +601,31 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_addRiskArea.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
 
-                        Map<String, Roll> rollsMap = new HashMap<>();
-                        rollsMap = db.getRollsMap();
+                        Map<String, Group> groupsMap = new HashMap<>();
+                        groupsMap = db.getGroupsMap();
 
-                        if(rollsMap==null || rollsMap.size() == 0){
-                            Toast.makeText(getApplicationContext(), getString(R.string.TOAST_cant_add_cube_cause_no_rolls), Toast.LENGTH_LONG).show();
+                        if(groupsMap==null || groupsMap.size() == 0){
+                            Toast.makeText(getApplicationContext(), getString(R.string.TOAST_cant_add_cube_cause_no_groups), Toast.LENGTH_LONG).show();
 
                         } else{
 
-                            Set<String> keys = rollsMap.keySet();
+                            Set<String> keys = groupsMap.keySet();
                             final String[] items = keys.toArray(new String[keys.size()]);
                             Arrays.sort(items);
 
                             final ArrayList selectedItems = new ArrayList();
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainUnityActivity.this);
-                            builder.setTitle("Please choose rolls for this risk area");
+                            builder.setTitle("Please choose groups for this risk area");
+
+//                            builder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//
+//                                        selectedItems.add(which);
+//
+//                                }
+//                            });
 
                             builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
                                 @Override
@@ -629,7 +638,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                                 }
                             });
 
-                            builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton(getString(R.string.BUTTON_done), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     StringBuilder arg = new StringBuilder();
@@ -646,7 +655,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                                 }
                             });
 
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            builder.setNegativeButton(getString(R.string.BUTTON_cancel), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -689,47 +698,6 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 getUnityFrameLayout().addView(UI_BTN_delete, buttonWidth + 20, buttonHeight);
             }
         });
-    }
-
-    public ArrayList<String> ChooseRollDialog(){
-
-        //TODO: replace with reading rolls from json file
-        final CharSequence[] items = {"Roll1","Roll2","Roll3","Roll4"};
-        final ArrayList selectedItems = new ArrayList();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Rolls");
-
-        builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                if (isChecked) {
-                    selectedItems.add(which);
-                } else if (selectedItems.contains(which)) {
-                    selectedItems.remove(Integer.valueOf(which));
-                }
-            }
-        });
-
-        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                selectedItems.clear();
-                selectedItems.add("Cancel");
-                dialog.dismiss();
-            }
-        });
-
-        //builder.create();
-        builder.show();
-
-        return selectedItems;
     }
 
     public void deleteDialog() {
@@ -799,7 +767,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         Log.d(TAG, "COUNTER = " + cubes_counter);
 
         if(cubes_counter == 0){
-            Toast.makeText(MainUnityActivity.this, "There are no risk areas to export", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_no_risk_area_to_export), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -919,12 +887,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
                                         runOnUiThread(new Runnable() {
                                             public void run() {
                                                 Log.d(TAG, "device ID is: " + s);
-                                                Toast.makeText(MainUnityActivity.this, "Exporting risk areas to device #" + s.substring(2), Toast.LENGTH_LONG).show();
+                                                Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_exporting_risk_areas_to_device) + s.substring(2), Toast.LENGTH_LONG).show();
                                             }
                                         });
 
-                                        // for each line (center point, vertex point) send data via serial
-                                        // nextLine[] is an array of values from the line
                                         short[] shorts = new short[number_of_points_to_export * dimension];
 
                                         if (nextLine[0].length() > 0) {
@@ -934,7 +900,6 @@ public class MainUnityActivity extends OverrideUnityActivity {
                                             }
 
                                             byte[]  buf = ShortToByte_Twiddle_Method(shorts);
-                                            //byte[] buf = floatArrayToBytes(floats);
 
                                             serial.write(buf);
                                         }
@@ -949,20 +914,14 @@ public class MainUnityActivity extends OverrideUnityActivity {
                             else if(s.startsWith("P") && s.endsWith("***")) {
                                 Log.d(TAG, "string is: " + s);
 
-
                                 // update DEBUG text TODO: remove
                                 updateDebugText(s);
-
-
                                 UnitySendMessage("Main Camera", "devicePositionUpdate",  s.substring(2));
                             }
 
                             else
                             {
-                                Log.d(TAG, "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS: " + s);
 
-                                //serial.close();
-                                //return;
                             }
                         }
 
@@ -972,7 +931,6 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 }
             }
         }
-//        /// END
 
     }
 
@@ -987,9 +945,9 @@ public class MainUnityActivity extends OverrideUnityActivity {
         {
             runOnUiThread(new Runnable() {
                 public void run() {
-                    x_text.setText("Lost signal");
-                    y_text.setText("Lost signal");
-                    z_text.setText("Lost signal");
+                    x_text.setText(getString(R.string.OTHER_lost_signal));
+                    y_text.setText(getString(R.string.OTHER_lost_signal));
+                    z_text.setText(getString(R.string.OTHER_lost_signal));
                 }
             });
         }

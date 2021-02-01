@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RollsActivity">
+    tools:context=".GroupsActivity">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,7 +20,7 @@
             android:theme="@style/AppTheme.AppBarOverlay">
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/rolls_toolbar"
+                android:id="@+id/groups_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
@@ -39,7 +39,7 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rollsList"
+            android:id="@+id/groupsList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -55,7 +55,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/rollsFloatingActionButton"
+        android:id="@+id/groupsFloatingActionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -66,11 +66,11 @@
         app:srcCompat="@drawable/plus" />
 
     <TextView
-        android:id="@+id/emptyRollsListTextView"
+        android:id="@+id/emptyGroupsListTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="@string/MESSAGE_rolls_empty_list"
+        android:text="@string/MESSAGE_groups_empty_list"
 
         app:layout_anchor="@+id/constraintLayout"
         app:layout_anchorGravity="center" />

@@ -10,16 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class RollsAdapter extends RecyclerView.Adapter<RollsAdapter.ViewHolder>{
+public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder>{
 
-    private RollsAdapter.OnItemClickListener listener;
+    private GroupsAdapter.OnItemClickListener listener;
 
     public interface OnItemClickListener {
 
         void onButtonClick(View itemView, int position);
     }
 
-    public void setOnItemClickListener(RollsAdapter.OnItemClickListener listener) {
+    public void setOnItemClickListener(GroupsAdapter.OnItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -30,8 +30,8 @@ public class RollsAdapter extends RecyclerView.Adapter<RollsAdapter.ViewHolder>{
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            nameTextView = itemView.findViewById(R.id.rollsNodeText);
-            editButton = itemView.findViewById(R.id.rollsNodeButton);
+            nameTextView = itemView.findViewById(R.id.groupsNodeText);
+            editButton = itemView.findViewById(R.id.groupsNodeButton);
 
             editButton.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -52,35 +52,35 @@ public class RollsAdapter extends RecyclerView.Adapter<RollsAdapter.ViewHolder>{
 
     }
 
-    private List<Roll> rolls;
+    private List<Group> groups;
 
-    public RollsAdapter(List<Roll> rol) {
-        rolls = rol;
+    public GroupsAdapter(List<Group> group) {
+        groups = group;
     }
 
     @NonNull
     @Override
-    public RollsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GroupsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View rollView = inflater.inflate(R.layout.rolls_node, parent, false);
+        View groupView = inflater.inflate(R.layout.groups_node, parent, false);
 
-        RollsAdapter.ViewHolder viewHolder = new RollsAdapter.ViewHolder(rollView);
+        GroupsAdapter.ViewHolder viewHolder = new GroupsAdapter.ViewHolder(groupView);
 
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RollsAdapter.ViewHolder holder, int position) {
-        Roll roll = rolls.get(position);
+    public void onBindViewHolder(@NonNull GroupsAdapter.ViewHolder holder, int position) {
+        Group group = groups.get(position);
 
         TextView textView = holder.nameTextView;
-        textView.setText(roll.getName());
+        textView.setText(group.getName());
     }
 
     @Override
     public int getItemCount() {
-        return rolls.size();
+        return groups.size();
     }
 }

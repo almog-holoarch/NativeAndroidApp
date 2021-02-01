@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditRoll">
+    tools:context=".EditGroup">
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -14,14 +14,14 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/rolls_toolbar"
+            android:id="@+id/groups_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <ImageView
-                app:layout_constraintStart_toStartOf="@+id/rolls_toolbar"
+                app:layout_constraintStart_toStartOf="@+id/groups_toolbar"
                 android:id="@+id/yourlogo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/txt_edit_roll_name"
+            android:id="@+id/txt_edit_group_name"
             android:layout_marginTop="100dp"
             android:layout_width ="350dp"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             android:inputType="textNoSuggestions|textCapSentences"/>
 
         <Button
-            android:id="@+id/btn_edit_roll_delete"
+            android:id="@+id/btn_edit_group_delete"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -58,7 +58,7 @@
             android:text="@string/BUTTON_remove" />
 
         <Button
-            android:id="@+id/btn_edit_roll_save"
+            android:id="@+id/btn_edit_group_save"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

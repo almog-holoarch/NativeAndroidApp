@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.unity.mynativeapp.MainActivity" >
 
-    <item android:id="@+id/action_manage_rolls"
-        android:title="@string/ACTION_manage_rolls"
+    <item android:id="@+id/action_manage_groups"
+        android:title="@string/ACTION_manage_groups"
         android:orderInCategory="100"
         app:showAsAction="never" />
 
