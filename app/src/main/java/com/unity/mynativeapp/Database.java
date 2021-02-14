@@ -41,11 +41,35 @@ public class Database extends AppCompatActivity {
     static private ArrayList<Substation> subs = new ArrayList<>();
     static private SubstationsAdapter subs_adapter;
     private static int pos;
+
     private static String path;
+    private static String x_offset, y_offset, z_offset, x_rotate, y_rotate, z_rotate;
 
     //GET_PATH
     static public String getPath(){
         return path;
+    }
+
+    //GET_ROTATION
+    static public String getRotationX(){
+        return x_rotate;
+    }
+    static public String getRotationY(){
+        return y_rotate;
+    }
+    static public String getRotationZ(){
+        return z_rotate;
+    }
+
+    //GET_OFFSET
+    static public String getOffsetX(){
+        return x_offset;
+    }
+    static public String getOffsetY(){
+        return y_offset;
+    }
+    static public String getOffsetZ(){
+        return z_offset;
     }
 
     //GET_SUBS_JSON_PATH
@@ -172,6 +196,12 @@ public class Database extends AppCompatActivity {
             public void onItemClick(View itemView, int position) {
 
                 path = subs.get(position).getPath();
+                x_offset = subs.get(position).getX_offset();
+                y_offset = subs.get(position).getY_offset();
+                z_offset = subs.get(position).getZ_offset();
+                x_rotate = subs.get(position).getX_rotate();
+                y_rotate = subs.get(position).getY_rotate();
+                z_rotate = subs.get(position).getZ_rotate();
 
                 if(path == ""){
                     Toast.makeText(itemView.getContext(),getString(R.string.TOAST_upload_las),Toast.LENGTH_SHORT).show();
@@ -292,7 +322,7 @@ public class Database extends AppCompatActivity {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////
-    //  Rolls     //
+    //  Roles     //
     ////////////////
 
     private static String group_json_path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "groups.json";

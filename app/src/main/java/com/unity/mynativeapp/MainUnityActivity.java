@@ -54,6 +54,10 @@ public class MainUnityActivity extends OverrideUnityActivity {
     private static final int dimension = 3;
     private static final int bytes_per_float = 4;
     private int cubes_counter;
+    private int current_group_cubes_counter;
+
+    UsbSerialDevice serial;
+    String chosenGroup = "";
 
     ///////////////////////
     //      DEBUG        //
@@ -67,8 +71,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
     TextView delta_z_text = null;
 
     float max_x, max_y, max_z = Float.NEGATIVE_INFINITY;
-    float min_x, min_y, min_z = Float.POSITIVE_INFINITY
-            ;
+    float min_x, min_y, min_z = Float.POSITIVE_INFINITY;
 
     boolean debug_created = false;
 
@@ -93,6 +96,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
     Button UI_BTN_cubeUp;
     Button UI_BTN_cubeDown;
 
+    Button UI_BTN_choose_group;
     Button UI_BTN_export;
     Button UI_BTN_delete;
 
@@ -132,8 +136,8 @@ public class MainUnityActivity extends OverrideUnityActivity {
         isChanged = false;
 
         String lasFilePath = Database.getPath();
-        String offset_vector = Database.getFromSubs().getX_offset() + "," + Database.getFromSubs().getY_offset() + "," + Database.getFromSubs().getZ_offset();
-        String rotate_vector = Database.getFromSubs().getX_rotate() + "," + Database.getFromSubs().getY_rotate() + "," + Database.getFromSubs().getZ_rotate();
+        String offset_vector = Database.getOffsetX() + "," + Database.getOffsetY() + "," + Database.getOffsetZ();
+        String rotate_vector = Database.getRotationX() + "," + Database.getRotationY() + "," + Database.getRotationZ();
 
         UnitySendMessage("Main Camera", "update3DModelPath", lasFilePath);
         UnitySendMessage("Main Camera", "updateRiskAreaJsonPath", riskAreaJsonPath);
@@ -601,8 +605,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_addRiskArea.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
 
-                        Map<String, Group> groupsMap = new HashMap<>();
-                        groupsMap = db.getGroupsMap();
+                        Map<String, Group> groupsMap = db.getGroupsMap();;
 
                         if(groupsMap==null || groupsMap.size() == 0){
                             Toast.makeText(getApplicationContext(), getString(R.string.TOAST_cant_add_cube_cause_no_groups), Toast.LENGTH_LONG).show();
@@ -680,10 +683,115 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 UI_BTN_export.setY(UI_firstSectionHeight);
                 UI_BTN_export.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        UnitySendMessage("Main Camera", "exportCubes", "");
+
+                        if(cubes_counter == 0){
+                            Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_no_risk_area_to_export), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        if(chosenGroup.equals("")){
+                            Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_chose_group_to_export), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        Map<String, Group> groupsMap = db.getGroupsMap();;
+
+                        if(groupsMap==null || groupsMap.size() == 0){
+                            Toast.makeText(getApplicationContext(), getString(R.string.TOAST_error), Toast.LENGTH_LONG).show();
+
+                        } else{
+
+//                            Set<String> keys = groupsMap.keySet();
+//                            final String[] items = keys.toArray(new String[keys.size()]);
+//                            Arrays.sort(items);
+//
+//                            final String[] chosen_item = new String[1];
+//                            chosen_item[0] = items[0];
+//
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(MainUnityActivity.this);
+//                            builder.setTitle("Please choose A group to export");
+//
+//                            builder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//
+//                                    chosen_item[0] = items[which];
+//
+//                                }
+//                            });
+//
+//                            builder.setPositiveButton(getString(R.string.BUTTON_done), new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//
+//                                    UnitySendMessage("Main Camera", "exportCubes", chosen_item[0]);
+//                                }
+//                            });
+//
+//                            builder.setNegativeButton(getString(R.string.BUTTON_cancel), new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.dismiss();
+//                                }
+//                            });
+//
+//                            builder.show();
+                            UnitySendMessage("Main Camera", "exportCubes", chosenGroup);
+                        }
                     }
                 });
                 getUnityFrameLayout().addView(UI_BTN_export, buttonWidth, buttonHeight);
+
+                //////////////////////////////
+                //     UI choose group      //
+                //////////////////////////////
+
+                UI_BTN_choose_group = new Button(getApplicationContext());
+                UI_BTN_choose_group.setText(getString(R.string.BUTTON_U_choose_group));
+                UI_BTN_choose_group.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonsTestSize);
+                UI_BTN_choose_group.setX(width - 400);
+                UI_BTN_choose_group.setY(UI_firstSectionHeight);
+                UI_BTN_choose_group.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        //TODO: check if changed
+                        UnitySendMessage("Main Camera", "jsonUpdate", "");
+                        chooseGroup();
+//                        UnitySendMessage("Main Camera", "checkIfChanged", "");
+//                        if (isChanged) {
+//
+//                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//
+//                                    switch (which) {
+//
+//                                        case DialogInterface.BUTTON_POSITIVE:
+//                                            UnitySendMessage("Main Camera", "jsonUpdate", "");
+//                                            chooseGroup();
+//                                            break;
+//
+//                                        case DialogInterface.BUTTON_NEGATIVE:
+//                                            break;
+//                                    }
+//                                }
+//                            };
+//
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(getUnityFrameLayout().getContext());
+//                            builder
+//                                    .setMessage(getString(R.string.MESSAGE_save_changes) + "\n\n ")
+//                                    .setPositiveButton(getString(R.string.BUTTON_yes), dialogClickListener)
+//                                    .setNegativeButton(getString(R.string.BUTTON_no), dialogClickListener)
+//                                    .setNeutralButton(getString(R.string.BUTTON_cancel), dialogClickListener)
+//                                    .setCancelable(true)
+//                                    .show();
+//
+//                        } else {
+//                            chooseGroup();
+//                        }
+                    }
+                });
+                getUnityFrameLayout().addView(UI_BTN_choose_group, buttonWidth, buttonHeight);
 
                 //////////////////////
                 //     UI Delete    //
@@ -698,6 +806,57 @@ public class MainUnityActivity extends OverrideUnityActivity {
                 getUnityFrameLayout().addView(UI_BTN_delete, buttonWidth + 20, buttonHeight);
             }
         });
+    }
+
+    public void chooseGroup(){
+        Map<String, Group> groupsMap = db.getGroupsMap();;
+
+        if(groupsMap==null || groupsMap.size() == 0){
+            Toast.makeText(getApplicationContext(), getString(R.string.TOAST_no_groups), Toast.LENGTH_LONG).show();
+
+        } else{
+
+            Group all = new Group();
+            all.setName("All Groups");
+            groupsMap.put("All Groups",all);
+
+            Set<String> keys = groupsMap.keySet();
+            final String[] items = keys.toArray(new String[keys.size()]);
+            Arrays.sort(items);
+
+            final String[] chosen_item = new String[1];
+            chosen_item[0] = items[0];
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainUnityActivity.this);
+            builder.setTitle("Please choose A group to display");
+
+            builder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    chosen_item[0] = items[which];
+
+                }
+            });
+
+            builder.setPositiveButton(getString(R.string.BUTTON_done), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    chosenGroup = chosen_item[0];
+                    UnitySendMessage("Main Camera", "showCubes", chosen_item[0]);
+                }
+            });
+
+            builder.setNegativeButton(getString(R.string.BUTTON_cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.show();
+        }
     }
 
     public void deleteDialog() {
@@ -764,12 +923,12 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
     void exportPoints() {
 
-        Log.d(TAG, "COUNTER = " + cubes_counter);
-
-        if(cubes_counter == 0){
-            Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_no_risk_area_to_export), Toast.LENGTH_LONG).show();
+        if(current_group_cubes_counter == 0){
+            Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_no_GROUP_risk_area_to_export), Toast.LENGTH_LONG).show();
             return;
         }
+
+        Log.d(TAG, "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOUNTER = " + current_group_cubes_counter);
 
         // DEBUG - TODO : remove
         if(debug_created)
@@ -806,7 +965,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
                 else {
                     usbConnection = usbManager.openDevice(device);
-                    final UsbSerialDevice serial = UsbSerialDevice.createUsbSerialDevice(device, usbConnection);
+                    serial = UsbSerialDevice.createUsbSerialDevice(device, usbConnection);
 
                     serial.open();
 
@@ -820,111 +979,36 @@ public class MainUnityActivity extends OverrideUnityActivity {
                     serial.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
 
                     Log.d(TAG, "sending hello to device " + device.getDeviceId() + " " + device.getProductId() + " " + device.getDeviceName());
-                    Log.d(TAG, "counter = " + cubes_counter);
+                    Log.d(TAG, "counter = " + current_group_cubes_counter);
 
                     byte[] arr = new byte[4];
                     arr[0] = '#';
                     arr[1] = arr[2] = arr[3] =  '*';
                     serial.write(arr);
+
+                    final String[] cmd = {""};
+
                     UsbSerialInterface.UsbReadCallback cb = new UsbSerialInterface.UsbReadCallback() {
                         @Override
                         public void onReceivedData(byte[] arg0) {
-                            Log.d(TAG, "received: " + arg0);
-                            final String s = new String(arg0, StandardCharsets.UTF_8);
 
-                            if (s.startsWith("OK")) {
+                            String received = new String(arg0, StandardCharsets.UTF_8);
 
-                                // read csv file
-                                try {
+                            //split by delimiter
+                            String[] splitter = received.split("\\*",2);
 
-                                    byte[] arr = new byte[24];
-                                    arr[0] = '#';
-
-                                    // counter
-                                    arr[1] = (byte) ((cubes_counter & 0xFF00) >> 8);
-                                    arr[2] = (byte) (cubes_counter & 0x00FF);
-
-                                    // HARD CODED START - new office scan with old anchor
-                                    // x1
-                                    arr[3] = (byte) ((floatToShort(-1.31f*100) & 0xFF00) >> 8);
-                                    arr[4] = (byte) (floatToShort(-1.31f*100) & 0x00FF);
-                                    // y1
-                                    arr[5] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
-                                    arr[6] = (byte) (floatToShort(2.59f*100) & 0x00FF);
-                                    // z1
-                                    arr[7] = (byte) ((floatToShort(0.25f*100) & 0xFF00) >> 8);
-                                    arr[8] = (byte) (floatToShort(0.25f*100) & 0x00FF);
-                                    // x2
-                                    arr[9] = (byte) ((floatToShort(-2.4325f*100f) & 0xFF00) >> 8);
-                                    arr[10] = (byte) (floatToShort(-2.4325f*100f) & 0x00FF);
-                                    // y2
-                                    arr[11] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
-                                    arr[12] = (byte) (floatToShort(2.59f*100) & 0x00FF);
-                                    // z2
-                                    arr[13] = (byte) ((floatToShort(0.9038f*100) & 0xFF00) >> 8);
-                                    arr[14] = (byte) (floatToShort(0.9038f*100) & 0x00FF);
-                                    // x3
-                                    arr[15] = (byte) ((floatToShort(-1.34f*100) & 0xFF00) >> 8);
-                                    arr[16] = (byte) (floatToShort(-1.34f*100) & 0x00FF);
-                                    // y3
-                                    arr[17] = (byte) ((floatToShort(2.59f*100) & 0xFF00) >> 8);
-                                    arr[18] = (byte) (floatToShort(2.59f*100) & 0x00FF);
-                                    // z3
-                                    arr[19] = (byte) ((floatToShort(1.5533f*100) & 0xFF00) >> 8);
-                                    arr[20] = (byte) (floatToShort(1.5533f*100) & 0x00FF);
-                                    // HARD CODED END
-
-                                    arr[21] = arr[22] = arr[23] =  '*';
-
-                                    serial.write(arr);
-
-                                    String export_path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "files" + File.separator + "export.csv";
-
-                                    CSVReader reader = new CSVReader(new FileReader(export_path));
-                                    String[] nextLine;
-                                    while ((nextLine = reader.readNext()) != null) {
-
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                Log.d(TAG, "device ID is: " + s);
-                                                Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_exporting_risk_areas_to_device) + s.substring(2), Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-
-                                        short[] shorts = new short[number_of_points_to_export * dimension];
-
-                                        if (nextLine[0].length() > 0) {
-
-                                            for (int i = 0; i < number_of_points_to_export * dimension; i++) {
-                                                shorts[i] = floatToShort(Float.parseFloat(nextLine[i])*100); // * 100 for meter to cm
-                                            }
-
-                                            byte[]  buf = ShortToByte_Twiddle_Method(shorts);
-
-                                            serial.write(buf);
-                                        }
-                                    }
-
-                                } catch (IOException e) {
-                                    Toast.makeText(MainUnityActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-
+                            // did not reached delimiter
+                            if(splitter.length == 1){
+                                if(!splitter[0].equals("")) cmd[0] += splitter[0];
                             }
 
-                            else if(s.startsWith("P") && s.endsWith("***")) {
-                                Log.d(TAG, "string is: " + s);
-
-                                // update DEBUG text TODO: remove
-                                updateDebugText(s);
-                                UnitySendMessage("Main Camera", "devicePositionUpdate",  s.substring(2));
-                            }
-
-                            else
-                            {
-
+                            // reached delimiter
+                            else{
+                                if(!splitter[0].equals("")) cmd[0] += splitter[0];
+                                runCommand(cmd[0]);
+                                cmd[0] = splitter[1];
                             }
                         }
-
                     };
 
                     serial.read(cb);
@@ -934,14 +1018,141 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
     }
 
+    void runCommand(final String cmd){
+
+        // Sending anchor and risk areas to hardware
+        if (cmd.startsWith("OK")) {
+
+            try {
+
+                // send anchor's position
+                sendAnchorPosition();
+
+                // read csv file for exported risk areas and send to hardware
+                String export_path = Environment.getExternalStorageDirectory() + File.separator + "Android/data/com.unity.mynativeapp" + File.separator + "files" + File.separator + "export.csv";
+                CSVReader reader = new CSVReader(new FileReader(export_path));
+                String[] nextLine;
+                while ((nextLine = reader.readNext()) != null) {
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Log.d(TAG, "device ID is: " + cmd);
+                            Toast.makeText(MainUnityActivity.this, getString(R.string.TOAST_exporting_risk_areas_to_device) + cmd.substring(2), Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    short[] shorts = new short[number_of_points_to_export * dimension];
+
+                    if (nextLine[0].length() > 0) {
+
+                        for (int i = 0; i < number_of_points_to_export * dimension; i++) {
+                            shorts[i] = floatToShort(Float.parseFloat(nextLine[i])*100); // * 100 for meter to cm
+                        }
+
+                        byte[]  buf = ShortToByte_Twiddle_Method(shorts);
+
+                        serial.write(buf);
+                    }
+                }
+
+            } catch (IOException e) {
+                Toast.makeText(MainUnityActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+        }
+
+        // Updates debug mode on tablet (blue dot real time position)
+        else if(cmd.startsWith("P")) {
+            Log.d(TAG, "string is: " + cmd);
+
+            // update DEBUG text TODO: remove
+            updateDebugText(cmd);
+            UnitySendMessage("Main Camera", "devicePositionUpdate",  cmd.substring(2));
+        }
+
+    }
+
+    void sendAnchorPosition(){
+
+        Point3D first  = new Point3D(2.1f, 2.55f, -0.1f);
+        Point3D second = new Point3D(2f,   2.55f, 0.073f);
+        Point3D third  = new Point3D(1.8f, 2.55f, 0.073f);
+        Point3D fourth = new Point3D(1.7f, 2.55f, -0.1f);
+        Point3D fifth  = new Point3D(1.8f, 2.55f, -0.273f);
+        Point3D sixth  = new Point3D(2f,   2.55f, -0.273f);
+
+        byte[] arr = new byte[42];
+
+        // opening
+        arr[0] = '#';
+
+        // counter
+        arr[1] = (byte) ((current_group_cubes_counter & 0xFF00) >> 8);
+        arr[2] = (byte)  (current_group_cubes_counter & 0x00FF);
+
+        // first
+        arr[3] =  (byte) ((floatToShort(first.x * 100) & 0xFF00) >> 8);
+        arr[4] =  (byte)  (floatToShort(first.x * 100) & 0x00FF);
+        arr[5] =  (byte) ((floatToShort(first.y * 100) & 0xFF00) >> 8);
+        arr[6] =  (byte)  (floatToShort(first.y * 100) & 0x00FF);
+        arr[7] =  (byte) ((floatToShort(first.z * 100) & 0xFF00) >> 8);
+        arr[8] =  (byte)  (floatToShort(first.z * 100) & 0x00FF);
+        // second
+        arr[9] =  (byte) ((floatToShort(second.x * 100) & 0xFF00) >> 8);
+        arr[10] = (byte)  (floatToShort(second.x * 100) & 0x00FF);
+        arr[11] = (byte) ((floatToShort(second.y * 100) & 0xFF00) >> 8);
+        arr[12] = (byte)  (floatToShort(second.y * 100) & 0x00FF);
+        arr[13] = (byte) ((floatToShort(second.z * 100) & 0xFF00) >> 8);
+        arr[14] = (byte)  (floatToShort(second.z * 100) & 0x00FF);
+        // third
+        arr[15] = (byte) ((floatToShort(third.x * 100) & 0xFF00) >> 8);
+        arr[16] = (byte)  (floatToShort(third.x * 100) & 0x00FF);
+        arr[17] = (byte) ((floatToShort(third.y * 100) & 0xFF00) >> 8);
+        arr[18] = (byte)  (floatToShort(third.y * 100) & 0x00FF);
+        arr[19] = (byte) ((floatToShort(third.z * 100) & 0xFF00) >> 8);
+        arr[20] = (byte)  (floatToShort(third.z * 100) & 0x00FF);
+        // fourth
+        arr[21] = (byte) ((floatToShort(fourth.x * 100) & 0xFF00) >> 8);
+        arr[22] = (byte)  (floatToShort(fourth.x * 100) & 0x00FF);
+        arr[23] = (byte) ((floatToShort(fourth.y * 100) & 0xFF00) >> 8);
+        arr[24] = (byte)  (floatToShort(fourth.y * 100) & 0x00FF);
+        arr[25] = (byte) ((floatToShort(fourth.z * 100) & 0xFF00) >> 8);
+        arr[26] = (byte)  (floatToShort(fourth.z * 100) & 0x00FF);
+        // fifth
+        arr[27] = (byte) ((floatToShort(fifth.x * 100) & 0xFF00) >> 8);
+        arr[28] = (byte)  (floatToShort(fifth.x * 100) & 0x00FF);
+        arr[29] = (byte) ((floatToShort(fifth.y * 100) & 0xFF00) >> 8);
+        arr[30] = (byte)  (floatToShort(fifth.y * 100) & 0x00FF);
+        arr[31] = (byte) ((floatToShort(fifth.z * 100) & 0xFF00) >> 8);
+        arr[32] = (byte)  (floatToShort(fifth.z * 100) & 0x00FF);
+        // sixth
+        arr[33] = (byte) ((floatToShort(sixth.x * 100) & 0xFF00) >> 8);
+        arr[34] = (byte)  (floatToShort(sixth.x * 100) & 0x00FF);
+        arr[35] = (byte) ((floatToShort(sixth.y * 100) & 0xFF00) >> 8);
+        arr[36] = (byte)  (floatToShort(sixth.y * 100) & 0x00FF);
+        arr[37] = (byte) ((floatToShort(sixth.z * 100) & 0xFF00) >> 8);
+        arr[38] = (byte)  (floatToShort(sixth.z * 100) & 0x00FF);
+
+        // ending
+        arr[39] = arr[40] = arr[41] =  '*';
+
+        //send
+        serial.write(arr);
+    }
+
     void updateDebugText(String s){
 
         final String[] split = s.split(",");
 
         String d1 = split[1], d2 = split[2] ,d3 = split[3];
-        float f1 = Float.valueOf(d1)/100, f2 = Float.valueOf(d2)/100, f3 = Float.valueOf(d3)/100;
+        String d4 = split[4], d5 = split[5] ,d6 = split[6];
 
-        if(f1 > 6 || f2 > 6 || f3 > 6)
+        float f1 = Float.parseFloat(d1)/100, f2 = Float.parseFloat(d2)/100, f3 = Float.parseFloat(d3)/100;
+        float f4 = Float.parseFloat(d4)/100, f5 = Float.parseFloat(d5)/100, f6 = Float.parseFloat(d6)/100;
+
+        float max_range = 4;
+
+        if(f1 > max_range || f2 > max_range || f3 > max_range || f4 > max_range || f5 > max_range || f6 > max_range)
         {
             runOnUiThread(new Runnable() {
                 public void run() {
@@ -954,9 +1165,9 @@ public class MainUnityActivity extends OverrideUnityActivity {
 
         else
         {
-            final float x = Float.parseFloat(split[4]) / 100;
-            final float y = Float.parseFloat(split[5]) / 100;
-            final float z = Float.parseFloat(split[6]) / 100;
+            final float x = Float.parseFloat(split[7]) / 100;
+            final float y = Float.parseFloat(split[8]) / 100;
+            final float z = Float.parseFloat(split[9]) / 100;
 
             if(x < min_x) min_x = x;
             if(y < min_y) min_y = y;
@@ -1088,6 +1299,7 @@ public class MainUnityActivity extends OverrideUnityActivity {
         Toast.makeText(getApplicationContext(), getString(R.string.TOAST_cant_add_cube_in_3D), Toast.LENGTH_SHORT).show();
     }
 
+
     public void increaseCubeCounter(){
         cubes_counter++;
     }
@@ -1095,6 +1307,17 @@ public class MainUnityActivity extends OverrideUnityActivity {
     public void decreaseCubeCounter(){
         cubes_counter--;
     }
+
+    public void increaseCURRENTCubeCounter(){
+        current_group_cubes_counter++;
+        Log.d(TAG,"increasing current cubes counter");
+    }
+
+    public void zeroCURRENTCubeCounter(){
+        current_group_cubes_counter = 0;
+        Log.d(TAG,"reset current cubes counter");
+    }
+
 
 //    public static byte[] floatArrayToBytes(float[] d) {
 //        byte[] r = new byte[d.length * bytes_per_float];
